@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}График работы{% endblock %}
+{% block content %}
+<div class="container" style="max-width:700px">
+  <div class="page-header reveal">
+    <h1 class="page-title" data-ru="График работы" data-kz="Жұмыс кестесі">График работы</h1>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:2rem" class="reveal">
+    {% set days_ru = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'] %}
+    {% set days_kz = ['Дүйсенбі','Сейсенбі','Сәрсенбі','Бейсенбі','Жұма','Сенбі','Жексенбі'] %}
+    {% set hours  = ['09:00–18:00','09:00–18:00','09:00–18:00','09:00–18:00','09:00–18:00','Выходной / Демалыс','Выходной / Демалыс'] %}
+    {% for i in range(7) %}
+    <div style="display:flex;align-items:center;justify-content:space-between;
+                background:#fff;border:1px solid var(--border);border-radius:var(--r);
+                padding:1rem 1.25rem;{% if i>=5 %}opacity:.55{% endif %}">
+      <span style="font-weight:500;color:var(--ink)" data-ru="{{days_ru[i]}}" data-kz="{{days_kz[i]}}">{{days_ru[i]}}</span>
+      <span style="font-size:.9rem;color:{% if i>=5 %}var(--ink3){% else %}var(--blue){% endif %};font-weight:500">
+        {{hours[i]}}
+      </span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem" class="reveal">
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      <span style="font-size:1.5rem">☕</span>
+      <div>
+        <div style="font-weight:500;margin-bottom:2px" data-ru="Обеденный перерыв" data-kz="Түскі үзіліс">Обеденный перерыв</div>
+        <div style="font-size:.9rem;color:var(--ink3)" data-ru="13:00 – 14:00 ежедневно" data-kz="13:00 – 14:00 күн сайын">13:00 – 14:00 ежедневно</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--gold);color:#fff;border-radius:var(--r);padding:1.25rem" class="reveal">
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      <span style="font-size:1.5rem">📍</span>
+      <div>
+        <div style="font-weight:600;margin-bottom:4px" data-ru="Адрес" data-kz="Мекен-жай">Адрес</div>
+        <div style="font-size:.95rem" data-ru="с. Краснознаменное, ул. Мектеп, 2" data-kz="Краснознаменное ауылы, Мектеп к., 2">с. Краснознаменное, ул. Мектеп, 2</div>
+        <div style="font-size:.82rem;opacity:.8;margin-top:2px" data-ru="Мамлютский район, СКО" data-kz="Мамлют ауданы, СҚО">Мамлютский район, СКО</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

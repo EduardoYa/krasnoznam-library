@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block head %}
+<style>
+.hero {
+  background: var(--ink);
+  position: relative;
+  overflow: hidden;
+  padding: 5rem 1.5rem;
+  text-align: center;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url('/static/uploads/hero_bg.jpg') center/cover no-repeat;
+  opacity: .18;
+}
+.hero-inner { position: relative; max-width: 700px; margin: 0 auto; }
+.hero-eyebrow {
+  display: inline-block;
+  font-size: .75rem; font-weight: 500; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--gold2);
+  border: 1px solid rgba(212,164,58,.4);
+  padding: 4px 14px; border-radius: 99px; margin-bottom: 1.25rem;
+  animation: fadeIn .6s both;
+}
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 700; color: #fff;
+  line-height: 1.15; letter-spacing: -.02em;
+  margin-bottom: 1rem;
+  animation: fadeUp .7s .1s both;
+}
+.hero-sub {
+  color: rgba(255,255,255,.65); font-size: 1rem; line-height: 1.7;
+  margin-bottom: 2rem;
+  animation: fadeUp .7s .2s both;
+}
+.hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  animation: fadeUp .7s .3s both; }
+.hero-ornament {
+  position: absolute; bottom: -1px; left: 0; right: 0;
+  height: 48px; background: var(--cream);
+  clip-path: ellipse(55% 100% at 50% 100%);
+}
+.info-strip {
+  background: var(--gold);
+  color: #fff; text-align: center;
+  padding: .6rem 1rem; font-size: .82rem; font-weight: 500;
+  letter-spacing: .03em;
+}
+.section-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.75rem; font-weight: 700;
+  color: var(--ink); letter-spacing: -.02em;
+  display: flex; align-items: baseline; gap: 12px;
+}
+.section-heading::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="info-strip" data-ru="Пн–Пт: 09:00–18:00  •  Обед: 13:00–14:00  •  Сб–Вс: выходной" data-kz="Дс–Жм: 09:00–18:00  •  Үзіліс: 13:00–14:00  •  Сн–Жк: демалыс">
+  Пн–Пт: 09:00–18:00  •  Обед: 13:00–14:00  •  Сб–Вс: выходной
+</div>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow" data-ru="с. Краснознаменное" data-kz="Краснознаменное ауылы">с. Краснознаменное</div>
+    <h1 class="hero-title" data-ru="Сельская библиотека" data-kz="Ауылдық кітапхана">Сельская библиотека</h1>
+    <p class="hero-sub" data-ru="Уютное место для чтения, знаний и культурного развития. Открыты для всех жителей села." data-kz="Оқу, білім алу және мәдени дамуға арналған жайлы орын. Ауылдың барлық тұрғындары үшін ашық.">
+      Уютное место для чтения, знаний и культурного развития. Открыты для всех жителей села.
+    </p>
+    <div class="hero-actions">
+      <a href="/news" class="btn btn-gold" data-ru="Читать новости →" data-kz="Жаңалықтарды оқу →">Читать новости →</a>
+      <a href="/about" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.3)" data-ru="О библиотеке" data-kz="Кітапхана туралы">О библиотеке</a>
+    </div>
+  </div>
+  <div class="hero-ornament"></div>
+</section>
+
+<div class="container">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem" class="reveal">
+    <h2 class="section-heading" data-ru="Последние новости" data-kz="Соңғы жаңалықтар">Последние новости</h2>
+    <a href="/news" class="btn btn-outline btn-sm" style="white-space:nowrap" data-ru="Все новости" data-kz="Барлық жаңалықтар">Все новости</a>
+  </div>
+
+  {% if news %}
+  <div class="news-grid">
+    {% for item in news %}
+    <article class="news-card">
+      {% if item['image'] %}
+      <a href="/news/{{item['id']}}">
+        {% set ext = item['image'].rsplit('.',1)[1].lower() if '.' in item['image'] else '' %}
+        {% if ext in ['mp4','webm'] %}
+        <video class="news-card-img" muted loop autoplay playsinline style="height:200px;width:100%;object-fit:cover">
+          <source src="/static/uploads/{{item['image']}}">
+        </video>
+        {% else %}
+        <img class="news-card-img" src="/static/uploads/{{item['image']}}" alt="">
+        {% endif %}
+      </a>
+      {% else %}
+      <div class="news-card-img-placeholder">📰</div>
+      {% endif %}
+      <div class="news-card-body">
+        {% if item['pinned'] %}<div class="news-card-pin" data-ru="📌 Закреплено" data-kz="📌 Бекітілген">📌 Закреплено</div>{% endif %}
+        <h3 class="news-card-title">
+          <a href="/news/{{item['id']}}"
+             class="lang-title"
+             data-ru="{{item['title_ru']}}"
+             data-kz="{{item['title_kz'] or item['title_ru']}}">
+            {{item['title_ru']}}
+          </a>
+        </h3>
+        <div class="news-card-date">{{item['created_at']}}</div>
+        <div class="news-card-text lang-body"
+             data-ru="{{item['body_ru']|striptags}}"
+             data-kz="{{(item['body_kz'] or item['body_ru'])|striptags}}">
+          {{item['body_ru']|striptags}}
+        </div>
+        <a href="/news/{{item['id']}}" class="news-card-more" data-ru="Читать далее →" data-kz="Толығырақ →">Читать далее →</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:4rem;color:var(--ink3)" class="reveal">
+    <div style="font-size:3rem;margin-bottom:1rem">📰</div>
+    <p data-ru="Новостей пока нет" data-kz="Жаңалықтар әзірге жоқ">Новостей пока нет</p>
+  </div>
+  {% endif %}
+
+  <div class="divider reveal"></div>
+
+  <div class="reveal" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-bottom:2rem">
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1.5rem">
+      <div style="font-size:2rem;margin-bottom:.75rem">🕒</div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:.5rem" data-ru="График работы" data-kz="Жұмыс кестесі">График работы</h3>
+      <p class="text-sm text-muted" data-ru="Пн–Пт: 09:00–18:00" data-kz="Дс–Жм: 09:00–18:00">Пн–Пт: 09:00–18:00</p>
+      <p class="text-sm text-muted" data-ru="Перерыв: 13:00–14:00" data-kz="Үзіліс: 13:00–14:00">Перерыв: 13:00–14:00</p>
+      <a href="/schedule" class="btn btn-outline btn-sm" style="margin-top:1rem" data-ru="Подробнее" data-kz="Толығырақ">Подробнее</a>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1.5rem">
+      <div style="font-size:2rem;margin-bottom:.75rem">📍</div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:.5rem" data-ru="Адрес" data-kz="Мекен-жай">Адрес</h3>
+      <p class="text-sm text-muted" data-ru="с. Краснознаменное" data-kz="Краснознаменное ауылы">с. Краснознаменное</p>
+      <p class="text-sm text-muted" data-ru="ул. Мектеп, 2" data-kz="Мектеп көшесі, 2">ул. Мектеп, 2</p>
+      <a href="/about" class="btn btn-outline btn-sm" style="margin-top:1rem" data-ru="О нас" data-kz="Біз туралы">О нас</a>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1.5rem">
+      <div style="font-size:2rem;margin-bottom:.75rem">📚</div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:.5rem" data-ru="Наши услуги" data-kz="Біздің қызметтер">Наши услуги</h3>
+      <p class="text-sm text-muted" data-ru="Художественная и учебная литература, читальный зал, помощь в подборе книг." data-kz="Көркем және оқу әдебиеті, оқу залы, кітап таңдауға көмек.">Художественная и учебная литература, читальный зал, помощь в подборе книг.</p>
+      <a href="/about" class="btn btn-outline btn-sm" style="margin-top:1rem" data-ru="Узнать больше" data-kz="Көбірек білу">Узнать больше</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, {threshold:0.08});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+});
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}О библиотеке{% endblock %}
+{% block content %}
+<div class="container" style="max-width:860px">
+  <div class="page-header reveal">
+    <h1 class="page-title" data-ru="О библиотеке" data-kz="Кітапхана туралы">О библиотеке</h1>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem" class="reveal">
+    <div>
+      <p style="font-size:1.05rem;line-height:1.85;color:var(--ink2);margin-bottom:1rem"
+         data-ru="Сельская библиотека села Краснознаменное — это уютное пространство, где каждый может найти книгу по душе. Мы работаем для школьников, студентов, учителей и всех жителей села."
+         data-kz="Краснознаменное ауылының ауылдық кітапханасы — әркім өзіне ұнайтын кітапты таба алатын жайлы кеңістік. Біз мектеп оқушылары, студенттер, мұғалімдер және ауылдың барлық тұрғындары үшін жұмыс істейміз.">
+        Сельская библиотека села Краснознаменное — это уютное пространство, где каждый может найти книгу по душе. Мы работаем для школьников, студентов, учителей и всех жителей села.
+      </p>
+      <p style="font-size:1rem;line-height:1.85;color:var(--ink2)"
+         data-ru="Наша цель — поддерживать интерес к чтению и развивать культурную жизнь нашего села."
+         data-kz="Біздің мақсатымыз — оқуға қызығушылықты қолдау және ауылымыздың мәдени өмірін дамыту.">
+        Наша цель — поддерживать интерес к чтению и развивать культурную жизнь нашего села.
+      </p>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1.5rem">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:1rem"
+          data-ru="Наши услуги" data-kz="Біздің қызметтер">Наши услуги</h3>
+      {% set services_ru = ['Доступ к художественной и учебной литературе','Чтение в читальном зале','Помощь в подборе литературы','Рекомендации по спискам чтения','Культурные мероприятия и встречи'] %}
+      {% set services_kz = ['Көркем және оқу әдебиетіне қол жеткізу','Оқу залында оқу','Әдебиетті таңдауға көмек','Оқу тізімдері бойынша ұсыныстар','Мәдени іс-шаралар мен кездесулер'] %}
+      {% for i in range(services_ru|length) %}
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.9rem;color:var(--ink2)"
+           data-ru="{{services_ru[i]}}" data-kz="{{services_kz[i]}}">
+        <span style="color:var(--gold);font-size:.8rem">✦</span>
+        {{services_ru[i]}}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div style="background:var(--ink);color:#fff;border-radius:var(--r);padding:2rem;text-align:center" class="reveal">
+    <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:.5rem;color:var(--gold2)"
+        data-ru="Контакты" data-kz="Байланыс">Контакты</h3>
+    <p style="font-size:.95rem;opacity:.8;margin-bottom:.25rem"
+       data-ru="с. Краснознаменное, ул. Мектеп, 2" data-kz="Краснознаменное ауылы, Мектеп к., 2">
+      с. Краснознаменное, ул. Мектеп, 2
+    </p>
+    <p style="font-size:.9rem;opacity:.55"
+       data-ru="Мамлютский район, Северо-Казахстанская область" data-kz="Мамлют ауданы, Солтүстік Қазақстан облысы">
+      Мамлютский район, Северо-Казахстанская область
+    </p>
+  </div>
+</div>
+{% endblock %}

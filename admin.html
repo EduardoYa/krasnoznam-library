@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Панель управления{% endblock %}
+{% block head %}
+<style>
+.admin-card { background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:10px;display:flex;align-items:center;gap:1rem;transition:box-shadow .2s; }
+.admin-card:hover { box-shadow:var(--shadow); }
+.admin-thumb { width:72px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;background:var(--cream2); }
+.admin-thumb-empty { width:72px;height:60px;border-radius:8px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0; }
+.admin-info { flex:1;min-width:0; }
+.admin-title { font-weight:500;font-size:.95rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.admin-date { font-size:.78rem;color:var(--ink3);margin-top:2px; }
+.admin-actions { display:flex;gap:6px;flex-shrink:0; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container" style="max-width:860px">
+  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+    <div>
+      <h1 class="page-title">Панель управления</h1>
+      <p class="page-sub">{{news|length}} новост{{news|length % 10 == 1 and news|length % 100 != 11 and 'ь' or (news|length % 10 in [2,3,4] and news|length % 100 not in [12,13,14] and 'и' or 'ей')}}</p>
+    </div>
+    <a href="/admin/add" class="btn btn-gold">✚ Добавить новость</a>
+  </div>
+
+  <div style="background:var(--cream2);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;gap:12px;align-items:flex-start">
+    <span style="font-size:1.3rem">💡</span>
+    <div style="font-size:.875rem;color:var(--ink2);line-height:1.6">
+      <strong>Как добавить новость:</strong> нажмите кнопку «Добавить новость», заполните заголовок и текст на русском и казахском. Можно загрузить фото или видео. Нажмите «Опубликовать» — новость появится на сайте.
+    </div>
+  </div>
+
+  {% if news %}
+  <div>
+    {% for item in news %}
+    <div class="admin-card">
+      {% if item['image'] %}
+        {% set ext = item['image'].rsplit('.',1)[1].lower() if '.' in item['image'] else '' %}
+        {% if ext in ['mp4','webm'] %}
+        <div class="admin-thumb-empty">🎬</div>
+        {% else %}
+        <img class="admin-thumb" src="/static/uploads/{{item['image']}}" alt="">
+        {% endif %}
+      {% else %}
+      <div class="admin-thumb-empty">📰</div>
+      {% endif %}
+      <div class="admin-info">
+        <div class="admin-title">
+          {% if item['pinned'] %}<span style="color:var(--gold);margin-right:4px">📌</span>{% endif %}
+          {{item['title_ru']}}
+        </div>
+        <div class="admin-date">{{item['created_at']}}</div>
+      </div>
+      <div class="admin-actions">
+        <a href="/news/{{item['id']}}" class="btn btn-outline btn-sm" target="_blank">👁</a>
+        <a href="/admin/edit/{{item['id']}}" class="btn btn-outline btn-sm">✏️</a>
+        <form action="/admin/delete/{{item['id']}}" method="POST"
+              onsubmit="return confirm('Удалить «{{item['title_ru']}}»?')">
+          <button type="submit" class="btn btn-danger btn-sm">🗑</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:4rem;color:var(--ink3)">
+    <div style="font-size:3rem;margin-bottom:1rem">📭</div>
+    <p>Новостей пока нет. Добавьте первую!</p>
+    <a href="/admin/add" class="btn btn-gold" style="margin-top:1rem">✚ Добавить новость</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

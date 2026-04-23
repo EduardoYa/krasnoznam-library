@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}{{ item['title_ru'] }}{% endblock %}
+{% block head %}
+<style>
+.news-detail { max-width: 760px; margin: 0 auto; }
+.detail-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 700; line-height: 1.2;
+  color: var(--ink); letter-spacing: -.02em;
+  margin-bottom: .75rem;
+}
+.detail-meta { display: flex; align-items: center; gap: 12px; color: var(--ink3); font-size: .82rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.detail-img { width: 100%; border-radius: var(--r); margin-bottom: 2rem; max-height: 460px; object-fit: cover; }
+.detail-body { font-size: 1rem; line-height: 1.85; color: var(--ink2); }
+.detail-body p { margin-bottom: 1rem; }
+.detail-body img { border-radius: var(--r); margin: 1rem 0; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+  <div style="margin-bottom:1.5rem">
+    <a href="/news" style="font-size:.85rem;color:var(--ink3)" data-ru="← Все новости" data-kz="← Барлық жаңалықтар">← Все новости</a>
+  </div>
+  <article class="news-detail fade-in">
+    {% if item['pinned'] %}
+    <div style="margin-bottom:1rem"><span class="badge badge-gold" data-ru="📌 Закреплено" data-kz="📌 Бекітілген">📌 Закреплено</span></div>
+    {% endif %}
+
+    <h1 class="detail-title lang-title"
+        data-ru="{{item['title_ru']}}"
+        data-kz="{{item['title_kz'] or item['title_ru']}}">
+      {{item['title_ru']}}
+    </h1>
+    <div class="detail-meta">
+      <span>📅 {{item['created_at']}}</span>
+    </div>
+
+    {% if item['image'] %}
+      {% set ext = item['image'].rsplit('.',1)[1].lower() if '.' in item['image'] else '' %}
+      {% if ext in ['mp4','webm'] %}
+      <video class="detail-img" controls style="background:#000">
+        <source src="/static/uploads/{{item['image']}}">
+      </video>
+      {% else %}
+      <img class="detail-img" src="/static/uploads/{{item['image']}}" alt="">
+      {% endif %}
+    {% endif %}
+
+    <div class="detail-body lang-body"
+         data-ru="{{item['body_ru']}}"
+         data-kz="{{item['body_kz'] or item['body_ru']}}">
+      {{item['body_ru']|safe}}
+    </div>
+
+    {% if session.get('admin') %}
+    <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;gap:8px">
+      <a href="/admin/edit/{{item['id']}}" class="btn btn-outline btn-sm">✏️ Редактировать</a>
+      <form action="/admin/delete/{{item['id']}}" method="POST" onsubmit="return confirm('Удалить новость?')">
+        <button type="submit" class="btn btn-danger btn-sm">🗑 Удалить</button>
+      </form>
+    </div>
+    {% endif %}
+  </article>
+</div>
+{% endblock %}
