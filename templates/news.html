@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Новости{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header reveal">
+    <h1 class="page-title" data-ru="Новости" data-kz="Жаңалықтар">Новости</h1>
+    <p class="page-sub" data-ru="Последние события и объявления библиотеки" data-kz="Кітапхананың соңғы оқиғалары мен хабарландырулары">Последние события и объявления библиотеки</p>
+  </div>
+
+  {% if news %}
+  <div class="news-grid">
+    {% for item in news %}
+    <article class="news-card">
+      {% if item['image'] %}
+      <a href="/news/{{item['id']}}">
+        {% set ext = item['image'].rsplit('.',1)[1].lower() if '.' in item['image'] else '' %}
+        {% if ext in ['mp4','webm'] %}
+        <video class="news-card-img" muted loop autoplay playsinline style="height:200px;width:100%;object-fit:cover">
+          <source src="/static/uploads/{{item['image']}}">
+        </video>
+        {% else %}
+        <img class="news-card-img" src="/static/uploads/{{item['image']}}" alt="">
+        {% endif %}
+      </a>
+      {% else %}
+      <div class="news-card-img-placeholder">📰</div>
+      {% endif %}
+      <div class="news-card-body">
+        {% if item['pinned'] %}<div class="news-card-pin" data-ru="📌 Закреплено" data-kz="📌 Бекітілген">📌 Закреплено</div>{% endif %}
+        <h3 class="news-card-title">
+          <a href="/news/{{item['id']}}" class="lang-title"
+             data-ru="{{item['title_ru']}}" data-kz="{{item['title_kz'] or item['title_ru']}}">
+            {{item['title_ru']}}
+          </a>
+        </h3>
+        <div class="news-card-date">{{item['created_at']}}</div>
+        <div class="news-card-text lang-body"
+             data-ru="{{item['body_ru']|striptags}}"
+             data-kz="{{(item['body_kz'] or item['body_ru'])|striptags}}">
+          {{item['body_ru']|striptags}}
+        </div>
+        <a href="/news/{{item['id']}}" class="news-card-more" data-ru="Читать далее →" data-kz="Толығырақ →">Читать далее →</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:5rem 2rem;color:var(--ink3)">
+    <div style="font-size:4rem;margin-bottom:1rem">📰</div>
+    <p style="font-size:1.1rem" data-ru="Новостей пока нет" data-kz="Жаңалықтар әзірге жоқ">Новостей пока нет</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
