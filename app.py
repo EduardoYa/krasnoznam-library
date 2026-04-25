@@ -155,6 +155,9 @@ def get_news_with_media(news_id=None):
         else:
             news_list = conn.execute("SELECT * FROM news ORDER BY pinned DESC, id DESC").fetchall()
         
+        # Конвертируем Row объекты в словари
+        news_list = [dict(row) for row in news_list]
+        
         for item in news_list:
             images = conn.execute(
                 "SELECT * FROM news_images WHERE news_id=? ORDER BY position", 
@@ -164,8 +167,8 @@ def get_news_with_media(news_id=None):
                 "SELECT * FROM news_videos WHERE news_id=? ORDER BY position", 
                 (item['id'],)
             ).fetchall()
-            item['images'] = list(images) if images else []
-            item['videos'] = list(videos) if videos else []
+            item['images'] = [dict(row) for row in images] if images else []
+            item['videos'] = [dict(row) for row in videos] if videos else []
     
     return news_list
 
