@@ -2,24 +2,61 @@
 {% block title %}Вход{% endblock %}
 {% block content %}
 <div style="min-height:70vh;display:flex;align-items:center;justify-content:center;padding:2rem">
-  <div style="width:100%;max-width:380px">
+  <div style="width:100%;max-width:420px">
     <div style="text-align:center;margin-bottom:2rem">
       <div style="font-size:3rem;margin-bottom:.5rem">🔐</div>
-      <h1 style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700">Вход для библиотекаря</h1>
-      <p style="color:var(--ink3);font-size:.9rem;margin-top:.4rem">Панель управления сайтом</p>
+      <h1 style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--ink)">Вход в панель</h1>
+      <p style="color:var(--ink3);font-size:.95rem;margin-top:.5rem">Управление сайтом библиотеки</p>
     </div>
     {% if error %}
-    <div class="alert alert-error">Неверный пароль. Попробуйте снова.</div>
+    <div class="alert alert-error" style="margin-bottom:1.5rem">❌ Неверный пароль. Попробуйте снова.</div>
     {% endif %}
-    <form method="POST" style="background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1.75rem">
-      <div class="form-group">
-        <label class="form-label">Пароль</label>
-        <input type="password" name="password" class="form-input" placeholder="••••••••" autofocus>
+    <form method="POST" style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:2rem;box-shadow:0 4px 25px rgba(26,22,18,0.06)">
+      <div class="form-group" style="margin-bottom:1.25rem">
+        <label class="form-label" style="display:block;margin-bottom:8px;font-weight:500">🔑 Пароль</label>
+        <input type="password" name="password" class="form-input" placeholder="Введите пароль" autofocus style="padding:12px 14px;border-radius:10px;font-size:1rem">
       </div>
-      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:.5rem">
+      <label class="form-check" style="margin-bottom:1.5rem;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none">
+        <input type="checkbox" name="remember" id="rememberCheck" style="width:18px;height:18px;cursor:pointer;accent-color:var(--blue)">
+        <span style="font-size:.95rem;color:var(--ink2)">Помнить пароль на 30 дней</span>
+      </label>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:1rem;border-radius:10px;font-weight:600;margin-bottom:1rem">
         Войти →
       </button>
+      <div style="text-align:center;font-size:.85rem;color:var(--ink3)">
+        По домену: /admin
+      </div>
     </form>
+    <div style="margin-top:2rem;padding:1rem;background:rgba(42,95,143,.08);border-radius:10px;border-left:4px solid var(--blue);font-size:.9rem;color:var(--ink2)">
+      💡 <strong>Совет:</strong> Для быстрого доступа просто перейди по адресу <code style="background:rgba(0,0,0,.05);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.85rem">/admin</code>
+    </div>
   </div>
 </div>
+<script>
+// Восстановить пароль из куков если есть
+window.addEventListener('load', function() {
+  const savedPassword = document.cookie.split('; ').find(row => row.startsWith('lib_admin_pass='));
+  if (savedPassword) {
+    const password = decodeURIComponent(savedPassword.split('=')[1]);
+    document.querySelector('input[name="password"]').value = password;
+    document.getElementById('rememberCheck').checked = true;
+  }
+});
+
+// Сохранить пароль в куки если отмечена галочка
+document.querySelector('form').addEventListener('submit', function(e) {
+  const passwordInput = document.querySelector('input[name="password"]');
+  const rememberCheckbox = document.getElementById('rememberCheck');
+  
+  if (rememberCheckbox.checked && passwordInput.value) {
+    // Сохранить пароль на 30 дней
+    const date = new Date();
+    date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
+    document.cookie = `lib_admin_pass=${encodeURIComponent(passwordInput.value)};expires=${date.toUTCString()};path=/`;
+  } else {
+    // Удалить куки если галочка не отмечена
+    document.cookie = 'lib_admin_pass=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
+  }
+});
+</script>
 {% endblock %}
