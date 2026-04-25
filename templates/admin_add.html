@@ -2,29 +2,6 @@
 {% block title %}Добавить новость{% endblock %}
 {% block head %}
 <style>
-.tab-pane { display:none; }
-.tab-pane.active { display:block; }
-.lang-tab { 
-  padding:12px 24px;
-  border:none;
-  border-bottom:3px solid transparent;
-  background:none;
-  font-family:'Geologica',sans-serif;
-  font-size:.95rem;
-  cursor:pointer;
-  color:var(--ink3);
-  transition:all .3s;
-  font-weight:500;
-}
-.lang-tab.active { 
-  color:var(--blue);
-  border-bottom-color:var(--blue);
-  font-weight:600;
-}
-.lang-tab:hover {
-  color:var(--ink);
-}
-
 .form-group { margin-bottom:1.5rem; }
 .form-label {
   display:block;
@@ -50,7 +27,7 @@
 }
 .form-textarea {
   resize:vertical;
-  min-height:140px;
+  min-height:120px;
 }
 .form-hint {
   font-size:.8rem;
@@ -72,86 +49,327 @@
   cursor:pointer;
   accent-color:var(--blue);
 }
+
+.lang-tabs {
+  display:flex;
+  gap:0;
+  border-bottom:2px solid var(--border);
+  margin-bottom:1.5rem;
+}
+.lang-tab-btn {
+  padding:12px 24px;
+  border:none;
+  background:transparent;
+  font-family:'Geologica',sans-serif;
+  font-size:.95rem;
+  font-weight:500;
+  color:var(--ink3);
+  cursor:pointer;
+  transition:all .2s;
+  border-bottom:3px solid transparent;
+  margin-bottom:-2px;
+}
+.lang-tab-btn.active {
+  color:var(--blue);
+  border-bottom-color:var(--blue);
+}
+.lang-tab-btn:hover {
+  color:var(--ink);
+}
+.lang-tab-pane { display:none; }
+.lang-tab-pane.active { display:block; }
+
+.file-upload-area {
+  border:2px dashed var(--border);
+  border-radius:12px;
+  padding:2rem;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+  background:var(--cream2);
+}
+.file-upload-area:hover {
+  border-color:var(--blue);
+  background:rgba(42,95,143,.05);
+}
+.file-upload-area.dragover {
+  border-color:var(--gold);
+  background:rgba(181,137,42,.05);
+}
+.file-upload-icon {
+  font-size:2.5rem;
+  margin-bottom:1rem;
+}
+.file-upload-text {
+  color:var(--ink2);
+  font-size:.95rem;
+  font-weight:500;
+}
+.file-upload-hint {
+  color:var(--ink3);
+  font-size:.85rem;
+  margin-top:.5rem;
+}
+
+.media-preview {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(120px, 1fr));
+  gap:12px;
+  margin-top:1rem;
+}
+.media-item {
+  position:relative;
+  border-radius:10px;
+  overflow:hidden;
+  background:var(--cream2);
+  aspect-ratio:1;
+}
+.media-item img,
+.media-item video {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.media-item-remove {
+  position:absolute;
+  top:6px;
+  right:6px;
+  background:rgba(143,42,42,.8);
+  color:#fff;
+  border:none;
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:1rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all .2s;
+}
+.media-item-remove:hover {
+  background:var(--red);
+}
+
+.url-textarea {
+  font-family:monospace;
+  font-size:.85rem;
+  min-height:80px;
+}
+
+.btn-submit {
+  background:linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+  color:#fff;
+  border:none;
+  padding:13px 28px;
+  border-radius:12px;
+  font-weight:600;
+  font-size:.95rem;
+  cursor:pointer;
+  transition:all .3s;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  box-shadow:0 4px 15px rgba(181,137,42,0.25);
+}
+.btn-submit:hover {
+  transform:translateY(-2px);
+  box-shadow:0 6px 25px rgba(181,137,42,0.35);
+}
+
+.btn-cancel {
+  background:transparent;
+  border:2px solid var(--border);
+  color:var(--ink2);
+  padding:11px 24px;
+  border-radius:12px;
+  font-weight:500;
+  font-size:.95rem;
+  cursor:pointer;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  transition:all .2s;
+}
+.btn-cancel:hover {
+  background:var(--cream2);
+  border-color:var(--ink3);
+}
+
+.section-box {
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:2rem;
+  margin-bottom:1.5rem;
+}
+
+.section-title {
+  font-size:1.1rem;
+  font-weight:600;
+  color:var(--ink);
+  margin-bottom:1.5rem;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+input[type="file"] { display:none; }
 </style>
 {% endblock %}
 {% block content %}
-<div style="max-width:800px;margin:0 auto;padding:2.5rem 1.5rem">
+<div style="max-width:900px;margin:0 auto;padding:2.5rem 1.5rem">
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:2px solid var(--border)">
     <div>
-      <h1 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--ink);margin-bottom:.5rem">Добавить новость</h1>
-      <p style="color:var(--ink3);font-size:.95rem">Заполните поля и нажмите «Опубликовать»</p>
+      <h1 style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--ink);margin-bottom:.5rem">Новая новость</h1>
+      <p style="color:var(--ink3);font-size:.95rem">Добавьте заголовок, текст, изображения и видео</p>
     </div>
-    <a href="/admin" style="background:rgba(42,95,143,.08);color:var(--blue);border:1px solid rgba(42,95,143,.2);padding:10px 18px;border-radius:10px;text-decoration:none;font-size:.9rem;font-weight:500;transition:all .2s;display:inline-flex;align-items:center;gap:6px" onmouseover="this.style.background='rgba(42,95,143,.15)'" onmouseout="this.style.background='rgba(42,95,143,.08)'">← Назад</a>
+    <a href="/admin" style="background:rgba(42,95,143,.08);color:var(--blue);border:1px solid rgba(42,95,143,.2);padding:10px 18px;border-radius:10px;text-decoration:none;font-size:.9rem;font-weight:500;transition:all .2s;display:inline-flex;align-items:center;gap:6px">← Назад</a>
   </div>
 
-  <form method="POST" enctype="multipart/form-data">
+  <form method="POST" enctype="multipart/form-data" id="newsForm">
 
-    <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:0;margin-bottom:1.5rem;overflow:hidden">
-      <div style="border-bottom:1px solid var(--border);display:flex;gap:0">
-        <button type="button" class="lang-tab active" onclick="switchLang('ru',this)" style="border-bottom:3px solid var(--blue)">🇷🇺 Русский</button>
-        <button type="button" class="lang-tab" onclick="switchLang('kz',this)">🇰🇿 Қазақша</button>
+    <!-- ТЕКСТ НОВОСТИ -->
+    <div class="section-box">
+      <div class="section-title">📝 Текст новости</div>
+      
+      <div class="lang-tabs">
+        <button type="button" class="lang-tab-btn active" onclick="switchLang('ru',this)">🇷🇺 Русский</button>
+        <button type="button" class="lang-tab-btn" onclick="switchLang('kz',this)">🇰🇿 Қазақша</button>
       </div>
 
-      <div style="padding:2rem">
-        <div id="pane-ru" class="tab-pane active">
-          <div class="form-group">
-            <label class="form-label">Заголовок (русский) <span style="color:var(--red)">*</span></label>
-            <input type="text" name="title_ru" class="form-input" placeholder="Например: Поздравляем с Наурызом!" required>
-          </div>
-          <div class="form-group" style="margin:0">
-            <label class="form-label">Текст новости (русский)</label>
-            <textarea name="body_ru" class="form-textarea" placeholder="Напишите текст новости..."></textarea>
-            <div class="form-hint">Можно вставлять текст из Word или другого редактора</div>
-          </div>
+      <div id="pane-ru" class="lang-tab-pane active">
+        <div class="form-group">
+          <label class="form-label">Заголовок (русский) <span style="color:var(--red)">*</span></label>
+          <input type="text" name="title_ru" class="form-input" placeholder="Например: Новое событие в библиотеке" required>
+          <div class="form-hint">Будет видна в списке новостей</div>
         </div>
-
-        <div id="pane-kz" class="tab-pane">
-          <div class="form-group">
-            <label class="form-label">Тақырып (қазақша)</label>
-            <input type="text" name="title_kz" class="form-input" placeholder="Мысалы: Наурызбен құттықтаймыз!">
-            <div class="form-hint">Если оставить пустым — будет отображаться русский текст</div>
-          </div>
-          <div class="form-group" style="margin:0">
-            <label class="form-label">Мәтін (қазақша)</label>
-            <textarea name="body_kz" class="form-textarea" placeholder="Жаңалық мәтінін жазыңыз..."></textarea>
-          </div>
+        <div class="form-group">
+          <label class="form-label">Описание (русский)</label>
+          <textarea name="body_ru" class="form-textarea" placeholder="Подробное описание новости..."></textarea>
         </div>
       </div>
-    </div>
 
-    <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:2rem">
-      <div class="form-group" style="margin-bottom:1rem">
-        <label class="form-label">📷 Фото или видео</label>
-        <input type="file" name="image" class="form-input" accept="image/*,video/mp4,video/webm"
-               style="padding:10px;cursor:pointer">
-        <div class="form-hint">Форматы: JPG, PNG, GIF, MP4 · Рекомендуемый размер фото: 1200×630</div>
+      <div id="pane-kz" class="lang-tab-pane">
+        <div class="form-group">
+          <label class="form-label">Тақырып (қазақша)</label>
+          <input type="text" name="title_kz" class="form-input" placeholder="Мысалы: Кітапханадағы жаңа оқиға">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Сипаттама (қазақша)</label>
+          <textarea name="body_kz" class="form-textarea" placeholder="Жаңалықтың толық сипаттамасы..."></textarea>
+        </div>
       </div>
+
       <label class="form-check">
         <input type="checkbox" name="pinned">
-        <span>📌 Закрепить новость (будет показана первой)</span>
+        <span>📌 Закрепить новость</span>
       </label>
     </div>
 
+    <!-- ИЗОБРАЖЕНИЯ -->
+    <div class="section-box">
+      <div class="section-title">🖼️ Изображения (макс 10)</div>
+      
+      <label class="form-label">1️⃣ Загрузить файлы</label>
+      <div class="file-upload-area" id="imageUploadArea" onclick="document.getElementById('imageFiles').click()">
+        <div class="file-upload-icon">📁</div>
+        <div class="file-upload-text">Нажми или перетащи изображения</div>
+        <div class="file-upload-hint">JPG, PNG, GIF, WebP</div>
+      </div>
+      <input type="file" id="imageFiles" name="image_files[]" accept="image/*" multiple onchange="handleImageUpload(event)">
+      <div class="media-preview" id="imagePreview"></div>
+
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+        <label class="form-label">2️⃣ Или вставь URL изображений</label>
+        <textarea name="image_urls" class="form-textarea url-textarea" placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"></textarea>
+        <div class="form-hint">По одному URL на строку</div>
+      </div>
+    </div>
+
+    <!-- ВИДЕО -->
+    <div class="section-box">
+      <div class="section-title">🎬 Видео (макс 5)</div>
+      
+      <label class="form-label">1️⃣ Загрузить файлы</label>
+      <div class="file-upload-area" id="videoUploadArea" onclick="document.getElementById('videoFiles').click()">
+        <div class="file-upload-icon">📹</div>
+        <div class="file-upload-text">Нажми или перетащи видео</div>
+        <div class="file-upload-hint">MP4, WebM</div>
+      </div>
+      <input type="file" id="videoFiles" name="video_files[]" accept="video/mp4,video/webm" multiple onchange="handleVideoUpload(event)">
+      <div class="media-preview" id="videoPreview"></div>
+
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+        <label class="form-label">2️⃣ Или вставь URL видео</label>
+        <textarea name="video_urls" class="form-textarea url-textarea" placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ&#10;https://vimeo.com/123456789"></textarea>
+        <div class="form-hint">YouTube или Vimeo ссылки</div>
+      </div>
+    </div>
+
+    <!-- КНОПКИ -->
     <div style="display:flex;gap:12px;flex-wrap:wrap">
-      <button type="submit" style="flex:1;min-width:200px;background:linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);color:#fff;border:none;padding:14px 24px;border-radius:12px;font-weight:600;font-size:.95rem;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 15px rgba(181,137,42,0.25)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 25px rgba(181,137,42,0.35)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(181,137,42,0.25)'">
-        ✅ Опубликовать
-      </button>
-      <a href="/admin" style="background:transparent;border:2px solid var(--border);color:var(--ink2);padding:12px 24px;border-radius:12px;font-weight:500;font-size:.95rem;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:6px" onmouseover="this.style.background='var(--cream2)';this.style.borderColor='var(--ink3)'" onmouseout="this.style.background='transparent';this.style.borderColor='var(--border)'">Отмена</a>
+      <button type="submit" class="btn-submit">✅ Опубликовать</button>
+      <a href="/admin" class="btn-cancel">Отмена</a>
     </div>
   </form>
 </div>
-{% endblock %}
-{% block scripts %}
+
 <script>
 function switchLang(lang, btn) {
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.lang-tab').forEach(b => {
-    b.classList.remove('active');
-    b.style.borderBottomColor = 'transparent';
-  });
+  document.querySelectorAll('.lang-tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.lang-tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('pane-'+lang).classList.add('active');
   btn.classList.add('active');
-  btn.style.borderBottomColor = 'var(--blue)';
 }
+
+function handleImageUpload(e) {
+  const files = e.target.files;
+  const preview = document.getElementById('imagePreview');
+  preview.innerHTML = '';
+  for (let file of files) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const div = document.createElement('div');
+      div.className = 'media-item';
+      div.innerHTML = `<img src="${event.target.result}" alt="preview">`;
+      preview.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function handleVideoUpload(e) {
+  const files = e.target.files;
+  const preview = document.getElementById('videoPreview');
+  preview.innerHTML = '';
+  for (let file of files) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const div = document.createElement('div');
+      div.className = 'media-item';
+      div.innerHTML = `<video><source src="${event.target.result}"></video>`;
+      preview.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Drag and drop
+['imageUploadArea', 'videoUploadArea'].forEach(id => {
+  const area = document.getElementById(id);
+  ['dragover', 'dragenter'].forEach(event => {
+    area.addEventListener(event, e => {
+      e.preventDefault();
+      area.classList.add('dragover');
+    });
+  });
+  area.addEventListener('dragleave', () => area.classList.remove('dragover'));
+  area.addEventListener('drop', e => {
+    e.preventDefault();
+    area.classList.remove('dragover');
+  });
+});
 </script>
 {% endblock %}
