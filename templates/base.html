@@ -65,13 +65,15 @@ img{max-width:100%;height:auto;display:block}
 }
 .nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
 .lang-btn{
-  background:transparent;border:1px solid var(--gold);
+  background:transparent;border:none;
   color:var(--gold2);font-family:'Geologica',sans-serif;
-  font-size:.8rem;font-weight:500;padding:4px 12px;
-  border-radius:99px;cursor:pointer;transition:all .2s;
+  font-size:1.3rem;font-weight:500;padding:6px 10px;
+  border-radius:6px;cursor:pointer;transition:all .2s;
   letter-spacing:0.05em;
+  display:flex;align-items:center;justify-content:center;
+  min-width:44px;min-height:44px;
 }
-.lang-btn:hover{background:var(--gold);color:var(--ink)}
+.lang-btn:hover{background:rgba(255,255,255,.1);transform:scale(1.1)}
 .admin-link{
   font-size:.8rem;color:rgba(255,255,255,.4);padding:4px 10px;
   border-radius:6px;transition:all .2s;
@@ -239,7 +241,13 @@ footer{
 
 <nav class="nav">
   <div class="nav-inner">
-    <div class="nav-logo">📚 <span>Кітапхана</span></div>
+    <div class="nav-logo">
+      <span style="font-size:1.8rem;display:flex;align-items:center">📚</span>
+      <div>
+        <div style="font-size:.95rem;letter-spacing:0.05em">Кітапхана</div>
+        <div style="font-size:.65rem;opacity:.7;margin-top:-2px">Библиотека</div>
+      </div>
+    </div>
     <div class="nav-links">
       <a href="/" class="{% if request.path=='/' %}active{% endif %}" data-ru="Главная" data-kz="Басты бет">Главная</a>
       <a href="/news" class="{% if request.path.startswith('/news') %}active{% endif %}" data-ru="Новости" data-kz="Жаңалықтар">Новости</a>
@@ -247,12 +255,11 @@ footer{
       <a href="/about" class="{% if request.path=='/about' %}active{% endif %}" data-ru="О библиотеке" data-kz="Кітапхана туралы">О библиотеке</a>
     </div>
     <div class="nav-right">
-      <button class="lang-btn" id="langBtn" onclick="toggleLang()">ҚАЗ</button>
+      <button class="lang-btn" id="langBtn" onclick="toggleLang()" title="Өз тілін өзгерту / Изменить язык">
+        <span id="langFlag">🇷🇺</span>
+      </button>
       {% if session.get('admin') %}
-      <a href="/admin" class="admin-link" data-ru="Панель" data-kz="Панель">Панель</a>
       <a href="/logout" class="admin-link" data-ru="Выйти" data-kz="Шығу">Выйти</a>
-      {% else %}
-      <a href="/login" class="admin-link">Админ</a>
       {% endif %}
       <button class="mob-menu-btn" onclick="toggleMob()">☰</button>
     </div>
@@ -291,7 +298,10 @@ function toggleLang() {
 
 function applyLang() {
   document.documentElement.setAttribute('data-lang', lang);
-  document.getElementById('langBtn').textContent = lang === 'ru' ? 'ҚАЗ' : 'РУС';
+  const flagEl = document.getElementById('langFlag');
+  if (flagEl) {
+    flagEl.textContent = lang === 'ru' ? '🇰🇿' : '🇷🇺';
+  }
   document.querySelectorAll('[data-ru]').forEach(el => {
     el.textContent = lang === 'ru' ? el.dataset.ru : (el.dataset.kz || el.dataset.ru);
   });
