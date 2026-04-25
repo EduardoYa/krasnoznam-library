@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-lang="ru" data-theme="dark">
+<html lang="ru" data-lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Geologica:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-/* ===== ПЕРЕМЕННЫЕ ТЕМЫ ===== */
 :root {
-  /* Светлая тема */
   --cream:   #faf7f2;
   --cream2:  #f2ede4;
   --cream3:  #e8e0d0;
@@ -25,40 +23,6 @@
   --shadow:  0 2px 20px rgba(26,22,18,0.08);
   --r:       10px;
 }
-
-/* Темная тема */
-html[data-theme="light"] {
-  --cream:   #ffffff;
-  --cream2:  #f5f3f0;
-  --cream3:  #ede8e0;
-  --ink:     #1a1612;
-  --ink2:    #3d3530;
-  --ink3:    #7a6e65;
-  --gold:    #b5892a;
-  --gold2:   #d4a43a;
-  --blue:    #2a5f8f;
-  --blue2:   #3a7ab5;
-  --red:     #8f2a2a;
-  --border:  rgba(26,22,18,0.08);
-  --shadow:  0 2px 20px rgba(26,22,18,0.06);
-}
-
-html[data-theme="dark"] {
-  --cream:   #0f0e0c;
-  --cream2:  #1a1815;
-  --cream3:  #242220;
-  --ink:     #f5f3f0;
-  --ink2:    #d4ccc8;
-  --ink3:    #9a8f85;
-  --gold:    #c9a648;
-  --gold2:   #e0b84a;
-  --blue:    #5a8faf;
-  --blue2:   #6fa5cf;
-  --red:     #bb5a5a;
-  --border:  rgba(245,243,240,0.12);
-  --shadow:  0 2px 20px rgba(0,0,0,0.25);
-}
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;scroll-behavior:smooth}
 body{
@@ -67,7 +31,6 @@ body{
   color:var(--ink);
   line-height:1.7;
   min-height:100vh;
-  transition:background-color .3s, color .3s;
 }
 a{color:var(--blue);text-decoration:none;transition:color .2s}
 a:hover{color:var(--gold)}
@@ -75,10 +38,9 @@ img{max-width:100%;height:auto;display:block}
 
 /* ── NAV ── */
 .nav{
-  background:var(--ink2);
+  background:var(--ink);
   position:sticky;top:0;z-index:100;
   border-bottom:2px solid var(--gold);
-  transition:background-color .3s;
 }
 .nav-inner{
   max-width:1200px;margin:0 auto;padding:0 1.5rem;
@@ -86,25 +48,12 @@ img{max-width:100%;height:auto;display:block}
 }
 .nav-logo{
   font-family:'Playfair Display',serif;
-  font-size:1rem;font-weight:700;
-  color:var(--cream);white-space:nowrap;
+  font-size:1.1rem;font-weight:700;
+  color:#fff;white-space:nowrap;
   display:flex;align-items:center;gap:8px;
   letter-spacing:0.01em;
 }
 .nav-logo span{color:var(--gold2)}
-.nav-logo div:last-child {
-  display:flex;
-  flex-direction:column;
-  gap:0;
-}
-.nav-logo div:last-child div:first-child {
-  font-size:.95rem;
-}
-.nav-logo div:last-child div:last-child {
-  font-size:.65rem;
-  opacity:.7;
-}
-
 .nav-links{display:flex;gap:2px;flex:1}
 .nav-links a{
   color:rgba(255,255,255,0.75);font-size:.875rem;font-weight:400;
@@ -125,17 +74,6 @@ img{max-width:100%;height:auto;display:block}
   min-width:44px;min-height:44px;
 }
 .lang-btn:hover{background:rgba(255,255,255,.1);transform:scale(1.1)}
-
-.theme-btn{
-  background:transparent;border:none;
-  color:var(--gold2);font-family:'Geologica',sans-serif;
-  font-size:1.2rem;cursor:pointer;transition:all .2s;
-  padding:6px 10px;
-  display:flex;align-items:center;justify-content:center;
-  min-width:44px;min-height:44px;
-}
-.theme-btn:hover{background:rgba(255,255,255,.1);transform:scale(1.1)}
-
 .admin-link{
   font-size:.8rem;color:rgba(255,255,255,.4);padding:4px 10px;
   border-radius:6px;transition:all .2s;
@@ -162,101 +100,75 @@ img{max-width:100%;height:auto;display:block}
 }
 .btn-primary{background:var(--blue);color:#fff}
 .btn-primary:hover{background:var(--blue2);color:#fff;transform:translateY(-1px)}
-.btn-gold{background:linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);color:#fff}
-.btn-gold:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(181,137,42,0.25)}
-.btn-outline{background:transparent;border:1px solid var(--border);color:var(--ink2)}
-.btn-outline:hover{background:var(--cream2);border-color:var(--ink3)}
-.btn-danger{background:rgba(143,42,42,.15);color:var(--red)}
-.btn-danger:hover{background:rgba(143,42,42,.25)}
-.btn-sm{padding:8px 12px;font-size:.8rem}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-gold:hover{background:var(--gold2);color:#fff;transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--ink2);border:1.5px solid var(--border)}
+.btn-outline:hover{border-color:var(--ink2);background:var(--cream2);color:var(--ink)}
+.btn-danger{background:transparent;color:var(--red);border:1px solid rgba(143,42,42,.3)}
+.btn-danger:hover{background:rgba(143,42,42,.08);border-color:var(--red)}
+.btn-sm{padding:6px 14px;font-size:.8rem}
 
-/* ── FORMS ── */
-.form-group{margin-bottom:1.25rem}
-.form-label{display:block;margin-bottom:.5rem;font-weight:500;font-size:.9rem}
-.form-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);font-family:inherit;font-size:.95rem;color:var(--ink);transition:all .2s}
-.form-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(42,95,143,0.08)}
-.form-textarea{resize:vertical;min-height:120px;width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);font-family:inherit;font-size:.95rem;color:var(--ink);transition:all .2s}
-.form-textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(42,95,143,0.08)}
-.form-check{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;font-size:.9rem}
-.form-hint{font-size:.8rem;color:var(--ink3);margin-top:.3rem}
-
-/* ── NEWS GRID ── */
-.news-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));
-  gap:1.5rem;
-  margin-bottom:2rem;
-}
+/* ── NEWS CARDS ── */
+.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
 .news-card{
-  background:#fff;
+  background:#fff;border-radius:var(--r);
   border:1px solid var(--border);
-  border-radius:var(--r);
   overflow:hidden;
-  transition:all .3s;
-  display:flex;
-  flex-direction:column;
-  height:100%;
+  transition:transform .25s,box-shadow .25s;
+  animation:fadeUp .5s both;
 }
-html[data-theme="dark"] .news-card {
-  background:var(--cream2);
-}
-.news-card:hover{
-  border-color:var(--blue);
-  box-shadow:var(--shadow);
-  transform:translateY(-4px);
-}
+.news-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(26,22,18,.12)}
 .news-card-img{
-  width:100%;
-  height:200px;
-  object-fit:cover;
-  background:var(--cream2);
+  width:100%;height:200px;object-fit:cover;
+  transition:transform .4s;
 }
-.news-card-body{
-  padding:1.25rem;
-  flex:1;
-  display:flex;
-  flex-direction:column;
+.news-card:hover .news-card-img{transform:scale(1.04)}
+.news-card-img-placeholder{
+  width:100%;height:180px;
+  background:linear-gradient(135deg,var(--cream2) 0%,var(--cream3) 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:3rem;opacity:.4;
+}
+.news-card-body{padding:1.25rem}
+.news-card-pin{
+  display:inline-block;font-size:.7rem;font-weight:500;
+  letter-spacing:.06em;text-transform:uppercase;
+  background:var(--gold);color:#fff;
+  padding:2px 8px;border-radius:99px;margin-bottom:8px;
 }
 .news-card-title{
   font-family:'Playfair Display',serif;
-  font-size:1.1rem;
-  font-weight:600;
-  color:var(--ink);
-  margin-bottom:.5rem;
-  line-height:1.3;
+  font-size:1.15rem;font-weight:600;color:var(--ink);
+  line-height:1.35;margin-bottom:.5rem;
 }
-.news-card-meta{
-  font-size:.8rem;
-  color:var(--ink3);
-  margin-bottom:.75rem;
+.news-card-title a{color:inherit}
+.news-card-title a:hover{color:var(--gold)}
+.news-card-date{font-size:.78rem;color:var(--ink3);margin-bottom:.75rem}
+.news-card-text{font-size:.875rem;color:var(--ink2);line-height:1.6;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.news-card-more{display:inline-block;margin-top:.75rem;font-size:.82rem;color:var(--blue);font-weight:500}
+.news-card-more:hover{color:var(--gold)}
+
+/* ── FORMS ── */
+.form-group{margin-bottom:1.25rem}
+.form-label{display:block;font-size:.85rem;font-weight:500;color:var(--ink2);margin-bottom:6px}
+.form-input,.form-textarea,.form-select{
+  width:100%;padding:10px 14px;
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r);color:var(--ink);
+  font-family:'Geologica',sans-serif;font-size:.875rem;
+  outline:none;transition:border-color .2s;
 }
-.news-card-excerpt{
-  color:var(--ink2);
-  font-size:.9rem;
-  line-height:1.6;
-  flex:1;
-  margin-bottom:1rem;
-}
-.news-card-link{
-  color:var(--blue);
-  font-size:.9rem;
-  font-weight:500;
-  transition:all .2s;
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
-}
-.news-card-link:hover{
-  color:var(--gold);
-  gap:8px;
-}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--blue)}
+.form-textarea{min-height:160px;resize:vertical;line-height:1.7}
+.form-hint{font-size:.78rem;color:var(--ink3);margin-top:4px}
+.form-check{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.875rem}
+.form-check input{width:18px;height:18px;accent-color:var(--gold);cursor:pointer}
 
 /* ── FOOTER ── */
-.footer{
-  background:var(--ink2);
-  color:#fff;
-  padding:2rem 1.5rem;
-  margin-top:4rem;
+footer{
+  background:var(--ink);color:rgba(255,255,255,.55);
+  padding:2rem 1.5rem;margin-top:4rem;
   border-top:2px solid var(--gold);
 }
 .footer-inner{
@@ -278,6 +190,7 @@ html[data-theme="dark"] .news-card {
 .text-muted{color:var(--ink3)}
 .text-sm{font-size:.85rem}
 
+/* ── ANIMATIONS ── */
 @keyframes fadeUp{
   from{opacity:0;transform:translateY(18px)}
   to{opacity:1;transform:translateY(0)}
@@ -292,9 +205,11 @@ html[data-theme="dark"] .news-card {
 .news-card:nth-child(5){animation-delay:.25s}
 .news-card:nth-child(6){animation-delay:.3s}
 
+/* Scroll reveal */
 .reveal{opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}
 .reveal.visible{opacity:1;transform:none}
 
+/* Mobile */
 @media(max-width:768px){
   .nav-inner{padding:0 1rem;gap:1rem}
   .nav-links{display:none}
@@ -303,21 +218,22 @@ html[data-theme="dark"] .news-card {
   .container{padding:1.5rem 1rem}
 }
 
+/* ── MOBILE MENU ── */
 .mob-menu-btn{
   display:none;background:none;border:none;cursor:pointer;
   color:rgba(255,255,255,.8);font-size:1.3rem;padding:4px;
 }
 @media(max-width:768px){.mob-menu-btn{display:block}}
 .mob-menu{
-  display:none;background:var(--ink2);border-top:1px solid rgba(255,255,255,.1);
+  display:none;background:var(--ink);border-top:1px solid rgba(255,255,255,.1);
   padding:.75rem 1rem;
 }
 .mob-menu.open{display:block}
 .mob-menu a{
-  display:block;padding:.75rem;color:rgba(255,255,255,.8);font-size:.9rem;
-  transition:color .2s;
+  display:block;color:rgba(255,255,255,.8);padding:8px 4px;
+  font-size:.9rem;border-bottom:1px solid rgba(255,255,255,.06);
 }
-.mob-menu a:hover{color:#fff}
+.mob-menu a:last-child{border:none}
 </style>
 {% block head %}{% endblock %}
 </head>
@@ -326,10 +242,10 @@ html[data-theme="dark"] .news-card {
 <nav class="nav">
   <div class="nav-inner">
     <div class="nav-logo">
-      <span>📚</span>
+      <span style="font-size:1.8rem;display:flex;align-items:center">📚</span>
       <div>
-        <div>Кітапхана</div>
-        <div>Библиотека</div>
+        <div style="font-size:.95rem;letter-spacing:0.05em">Кітапхана</div>
+        <div style="font-size:.65rem;opacity:.7;margin-top:-2px">Библиотека</div>
       </div>
     </div>
     <div class="nav-links">
@@ -341,9 +257,6 @@ html[data-theme="dark"] .news-card {
     <div class="nav-right">
       <button class="lang-btn" id="langBtn" onclick="toggleLang()" title="Өз тілін өзгерту / Изменить язык">
         <span id="langFlag">🇷🇺</span>
-      </button>
-      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Тёмная/светлая тема">
-        <span id="themeIcon">🌙</span>
       </button>
       {% if session.get('admin') %}
       <a href="/logout" class="admin-link" data-ru="Выйти" data-kz="Шығу">Выйти</a>
@@ -359,19 +272,22 @@ html[data-theme="dark"] .news-card {
   </div>
 </nav>
 
-<main>
-  {% block content %}{% endblock %}
-</main>
+{% block content %}{% endblock %}
 
-<footer class="footer">
+<footer>
   <div class="footer-inner">
-    <div class="footer-logo">📚 <span>Кітапхана</span> — Библиотека</div>
-    <div>© 2026 с. Краснознаменное</div>
+    <div>
+      <div class="footer-logo">📚 <span>Кітапхана</span></div>
+      <div style="margin-top:4px" data-ru="с. Краснознаменное, ул. Мектеп, 2" data-kz="Краснознаменное ауылы, Мектеп к., 2">с. Краснознаменное, ул. Мектеп, 2</div>
+    </div>
+    <div style="text-align:right">
+      <div data-ru="Пн–Пт: 09:00–18:00" data-kz="Дс–Жм: 09:00–18:00">Пн–Пт: 09:00–18:00</div>
+      <div style="margin-top:4px;font-size:.78rem;opacity:.5">© 2026</div>
+    </div>
   </div>
 </footer>
 
 <script>
-// Язык
 let lang = localStorage.getItem('lib_lang') || 'ru';
 
 function toggleLang() {
@@ -389,46 +305,29 @@ function applyLang() {
   document.querySelectorAll('[data-ru]').forEach(el => {
     el.textContent = lang === 'ru' ? el.dataset.ru : (el.dataset.kz || el.dataset.ru);
   });
+  document.querySelectorAll('[data-ru-href]').forEach(el => {
+    el.href = lang === 'ru' ? el.dataset.ruHref : (el.dataset.kzHref || el.dataset.ruHref);
+  });
+  document.querySelectorAll('.lang-title').forEach(el => {
+    el.textContent = lang === 'ru' ? (el.dataset.ru||'') : (el.dataset.kz||el.dataset.ru||'');
+  });
+  document.querySelectorAll('.lang-body').forEach(el => {
+    el.innerHTML = lang === 'ru' ? (el.dataset.ru||'') : (el.dataset.kz||el.dataset.ru||'');
+  });
 }
 
-// Тема
-let theme = localStorage.getItem('lib_theme') || 'dark';
-
-function toggleTheme() {
-  theme = theme === 'dark' ? 'light' : 'dark';
-  localStorage.setItem('lib_theme', theme);
-  applyTheme();
-}
-
-function applyTheme() {
-  document.documentElement.setAttribute('data-theme', theme);
-  const themeIcon = document.getElementById('themeIcon');
-  if (themeIcon) {
-    themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
-  }
-}
-
-// Мобильное меню
 function toggleMob() {
   document.getElementById('mobMenu').classList.toggle('open');
 }
 
-// Инициализация
-applyLang();
-applyTheme();
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold: 0.1});
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// Reveal анимация
-function observeElements() {
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-}
-observeElements();
+document.addEventListener('DOMContentLoaded', applyLang);
 </script>
+{% block scripts %}{% endblock %}
 </body>
 </html>
