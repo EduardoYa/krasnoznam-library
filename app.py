@@ -1,26 +1,39 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from datetime import datetime, timezone, timedelta
 from contextlib import contextmanager
-import sqlite3, os, uuid
+import sqlite3, os, uuid, json, re
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "library-secret-2026")
-app.config['UPLOAD_FOLDER'] = '/data/uploads'  # ДОБАВЬ ЭТУ СТРОКУ
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = "/data"  # Volume хранилище
+DATA_DIR = "/data"
 DB_NAME  = os.path.join(DATA_DIR, "library.db")
 UPLOAD_FOLDER = os.path.join(DATA_DIR, "uploads")
-ALLOWED_EXT = {"png","jpg","jpeg","gif","webp","mp4","webm"}
+ALLOWED_IMG = {"png","jpg","jpeg","gif","webp"}
+ALLOWED_VID = {"mp4","webm","mov","avi"}
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "library2026")
 UTC5 = timezone(timedelta(hours=5))
 
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-def allowed(filename):
-    return "." in filename and filename.rsplit(".",1)[1].lower() in ALLOWED_EXT
+def allowed(filename, ftype="img"):
+    if "." not in filename:
+        return False
+    ext = filename.rsplit(".",1)[1].lower()
+    if ftype == "img":
+        return ext in ALLOWED_IMG
+    elif ftype == "vid":
+        return ext in ALLOWED_VID
+    return False
+
+def is_valid_video_url(url):
+    """Проверить валидность URL видео"""
+    if "youtube.com" in url or "youtu.be" in url or "vimeo.com" in url:
+        return True
+    return False
 
 def now5():
     return datetime.now(UTC5)
@@ -43,19 +56,32 @@ def init_db():
         conn.execute("""CREATE TABLE IF NOT EXISTS news (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title_ru TEXT, title_kz TEXT,
-            body_ru TEXT,  body_kz TEXT,
-            image TEXT, created_at TEXT, pinned INTEGER DEFAULT 0
+            body_ru TEXT, body_kz TEXT,
+            images TEXT, videos TEXT,
+            created_at TEXT, pinned INTEGER DEFAULT 0
         )""")
+        
+        # Миграция старых данных если существует старая таблица
+        try:
+            old_data = conn.execute("SELECT * FROM news LIMIT 1").fetchone()
+            if old_data and "image" in dict(old_data):
+                # Есть старая структура, нужна миграция
+                pass
+        except:
+            pass
+        
         if conn.execute("SELECT count(*) FROM news").fetchone()[0] == 0:
             conn.executemany("""INSERT INTO news
-                (title_ru,title_kz,body_ru,body_kz,created_at) VALUES (?,?,?,?,?)""", [
+                (title_ru,title_kz,body_ru,body_kz,images,videos,created_at) VALUES (?,?,?,?,?,?,?)""", [
                 ("Добро пожаловать на наш сайт!","Сайтымызға қош келдіңіз!",
                  "Сельская библиотека села Краснознаменное открыла свой официальный сайт. Здесь вы найдёте актуальные новости, график работы и информацию о наших услугах.",
                  "Краснознаменное ауылының ауылдық кітапханасы өзінің ресми сайтын ашты. Мұнда сіз өзекті жаңалықтарды, жұмыс кестесін және қызметтеріміз туралы ақпаратты таба аласыз.",
+                 json.dumps([]), json.dumps([]),
                  now5().strftime("%Y-%m-%d %H:%M")),
                 ("Праздник Наурыз","Наурыз мерекесі",
                  "Поздравляем всех жителей с праздником Наурыз! Пусть этот день принесёт радость, мир и процветание каждому дому.",
                  "Барлық тұрғындарды Наурыз мерекесімен құттықтаймыз! Бұл күн әр үйге қуаныш, бейбітшілік және молшылық әкелсін.",
+                 json.dumps([]), json.dumps([]),
                  now5().strftime("%Y-%m-%d %H:%M")),
             ])
 
@@ -129,17 +155,50 @@ def admin_add():
         body_ru  = request.form.get("body_ru","").strip()
         body_kz  = request.form.get("body_kz","").strip()
         pinned   = 1 if request.form.get("pinned") else 0
-        image_path = None
-        file = request.files.get("image")
-        if file and file.filename and allowed(file.filename):
-            ext = file.filename.rsplit(".",1)[1].lower()
-            fname = f"{uuid.uuid4().hex}.{ext}"
-            file.save(os.path.join(UPLOAD_FOLDER, fname))
-            image_path = fname
+        
+        # Обработка изображений
+        images = []
+        
+        # Загруженные изображения
+        image_files = request.files.getlist("images[]")
+        for file in image_files:
+            if file and file.filename and allowed(file.filename, "img"):
+                ext = file.filename.rsplit(".",1)[1].lower()
+                fname = f"{uuid.uuid4().hex}.{ext}"
+                file.save(os.path.join(UPLOAD_FOLDER, fname))
+                images.append({"type": "upload", "url": fname})
+        
+        # URL изображений
+        image_urls = request.form.get("image_urls", "").strip().split('\n')
+        for url in image_urls:
+            url = url.strip()
+            if url and url.startswith("http"):
+                images.append({"type": "url", "url": url})
+        
+        # Обработка видео
+        videos = []
+        
+        # Загруженные видео
+        video_files = request.files.getlist("videos[]")
+        for file in video_files:
+            if file and file.filename and allowed(file.filename, "vid"):
+                ext = file.filename.rsplit(".",1)[1].lower()
+                fname = f"{uuid.uuid4().hex}.{ext}"
+                file.save(os.path.join(UPLOAD_FOLDER, fname))
+                videos.append({"type": "upload", "url": fname})
+        
+        # URL видео
+        video_urls = request.form.get("video_urls", "").strip().split('\n')
+        for url in video_urls:
+            url = url.strip()
+            if url and is_valid_video_url(url):
+                videos.append({"type": "url", "url": url})
+        
         with get_db() as conn:
-            conn.execute("""INSERT INTO news (title_ru,title_kz,body_ru,body_kz,image,created_at,pinned)
-                VALUES (?,?,?,?,?,?,?)""",
-                (title_ru, title_kz, body_ru, body_kz, image_path,
+            conn.execute("""INSERT INTO news (title_ru,title_kz,body_ru,body_kz,images,videos,created_at,pinned)
+                VALUES (?,?,?,?,?,?,?,?)""",
+                (title_ru, title_kz, body_ru, body_kz, 
+                 json.dumps(images), json.dumps(videos),
                  now5().strftime("%Y-%m-%d %H:%M"), pinned))
         return redirect(url_for("admin_panel"))
     return render_template("admin_add.html")
@@ -149,31 +208,57 @@ def admin_add():
 def admin_edit(nid):
     with get_db() as conn:
         item = conn.execute("SELECT * FROM news WHERE id=?", (nid,)).fetchone()
-    if not item: return redirect(url_for("admin_panel"))
+    if not item:
+        return redirect(url_for("admin_panel"))
+    
     if request.method == "POST":
         title_ru = request.form.get("title_ru","").strip()
         title_kz = request.form.get("title_kz","").strip()
         body_ru  = request.form.get("body_ru","").strip()
         body_kz  = request.form.get("body_kz","").strip()
         pinned   = 1 if request.form.get("pinned") else 0
-        image_path = item["image"]
-        file = request.files.get("image")
-        if file and file.filename and allowed(file.filename):
-            ext = file.filename.rsplit(".",1)[1].lower()
-            fname = f"{uuid.uuid4().hex}.{ext}"
-            file.save(os.path.join(UPLOAD_FOLDER, fname))
-            image_path = fname
+        
+        # Обработка изображений (аналогично add)
+        images = []
+        image_files = request.files.getlist("images[]")
+        for file in image_files:
+            if file and file.filename and allowed(file.filename, "img"):
+                ext = file.filename.rsplit(".",1)[1].lower()
+                fname = f"{uuid.uuid4().hex}.{ext}"
+                file.save(os.path.join(UPLOAD_FOLDER, fname))
+                images.append({"type": "upload", "url": fname})
+        
+        image_urls = request.form.get("image_urls", "").strip().split('\n')
+        for url in image_urls:
+            url = url.strip()
+            if url and url.startswith("http"):
+                images.append({"type": "url", "url": url})
+        
+        # Обработка видео
+        videos = []
+        video_files = request.files.getlist("videos[]")
+        for file in video_files:
+            if file and file.filename and allowed(file.filename, "vid"):
+                ext = file.filename.rsplit(".",1)[1].lower()
+                fname = f"{uuid.uuid4().hex}.{ext}"
+                file.save(os.path.join(UPLOAD_FOLDER, fname))
+                videos.append({"type": "upload", "url": fname})
+        
+        video_urls = request.form.get("video_urls", "").strip().split('\n')
+        for url in video_urls:
+            url = url.strip()
+            if url and is_valid_video_url(url):
+                videos.append({"type": "url", "url": url})
+        
         with get_db() as conn:
-            conn.execute("""UPDATE news SET title_ru=?,title_kz=?,body_ru=?,body_kz=?,
-                image=?,pinned=? WHERE id=?""",
-                (title_ru,title_kz,body_ru,body_kz,image_path,pinned,nid))
+            conn.execute("""UPDATE news SET title_ru=?,title_kz=?,body_ru=?,body_kz=?,images=?,videos=?,pinned=? WHERE id=?""",
+                (title_ru, title_kz, body_ru, body_kz, json.dumps(images), json.dumps(videos), pinned, nid))
         return redirect(url_for("admin_panel"))
-    return render_template("admin_edit.html", item=item)
     
-@app.route("/upload/<path:filename>")
-def download_file(filename):
-    from flask import send_from_directory
-    return send_from_directory('/data/uploads', filename)
+    item_dict = dict(item)
+    item_dict['images'] = json.loads(item['images'] or '[]')
+    item_dict['videos'] = json.loads(item['videos'] or '[]')
+    return render_template("admin_edit.html", item=item_dict)
 
 @app.route("/admin/delete/<int:nid>", methods=["POST"])
 @require_admin
@@ -182,9 +267,10 @@ def admin_delete(nid):
         conn.execute("DELETE FROM news WHERE id=?", (nid,))
     return redirect(url_for("admin_panel"))
 
-@app.route("/health")
-def health():
-    return {"status": "healthy"}, 200
+@app.route("/upload/<path:filename>")
+def download_file(filename):
+    from flask import send_from_directory
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
