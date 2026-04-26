@@ -3,14 +3,14 @@
 {% block content %}
 
 <div class="container">
-  <div class="page-header">
-    <h1 class="page-title">📰 Новости</h1>
-    <p class="page-sub">Все новости нашей библиотеки</p>
+  <div style="margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border)">
+    <h1 style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--ink);margin-bottom:0.5rem">📰 Все новости</h1>
+    <p style="color:var(--ink3);font-size:1rem">Все события и новости нашей библиотеки</p>
   </div>
 
-  <div class="news-grid">
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem">
     {% for item in news %}
-    <article class="news-card">
+    <article style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .3s;display:flex;flex-direction:column;height:100%" onmouseover="this.style.borderColor='var(--blue)';this.style.boxShadow='0 6px 25px rgba(26,22,18,.1)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='';this.style.transform=''">
       <div style="width:100%;height:200px;background:var(--cream2);overflow:hidden;display:flex;align-items:center;justify-content:center">
         {% set images_json = item.images %}
         {% if images_json %}
@@ -18,9 +18,9 @@
           {% if images_list and images_list|length > 0 %}
             {% set first_img = images_list[0] %}
             {% if first_img.type == 'upload' %}
-              <img src="/upload/{{ first_img.url }}" alt="Изображение" style="width:100%;height:100%;object-fit:cover">
+              <img src="/upload/{{ first_img.url }}" alt="Изображение" style="width:100%;height:100%;object-fit:cover;transition:transform .3s" loading="lazy">
             {% else %}
-              <img src="{{ first_img.url }}" alt="Изображение" style="width:100%;height:100%;object-fit:cover">
+              <img src="{{ first_img.url }}" alt="Изображение" style="width:100%;height:100%;object-fit:cover;transition:transform .3s" loading="lazy">
             {% endif %}
           {% else %}
             <div style="font-size:3rem;color:var(--ink3)">📰</div>
@@ -30,16 +30,16 @@
         {% endif %}
       </div>
 
-      <div class="news-card-body">
-        <h3 class="news-card-title">
+      <div style="padding:1.25rem;flex:1;display:flex;flex-direction:column">
+        <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;color:var(--ink);margin-bottom:.5rem;line-height:1.3">
           {% if item.pinned %}📌 {% endif %}
           {{ item.title_ru }}
         </h3>
-        <div class="news-card-date">{{ item.created_at }}</div>
-        <div class="news-card-excerpt">
+        <div style="font-size:.8rem;color:var(--ink3);margin-bottom:.75rem">{{ item.created_at }}</div>
+        <div style="color:var(--ink2);font-size:.9rem;line-height:1.6;flex:1;margin-bottom:1rem">
           {{ item.body_ru[:150] | safe }}...
         </div>
-        <a href="/news/{{ item.id }}" class="news-card-link">
+        <a href="/news/{{ item.id }}" style="color:var(--blue);font-size:.9rem;font-weight:500;display:inline-flex;align-items:center;gap:4px;transition:all .2s;text-decoration:none" onmouseover="this.style.color='var(--gold)';this.style.gap='8px'" onmouseout="this.style.color='var(--blue)';this.style.gap='4px'">
           Читать далее →
         </a>
       </div>
