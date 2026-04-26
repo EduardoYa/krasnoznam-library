@@ -8,12 +8,14 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "library-secret-2026")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_NAME  = os.path.join(BASE_DIR, "library.db")
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
+DATA_DIR = "/data"  # Volume хранилище
+DB_NAME  = os.path.join(DATA_DIR, "library.db")
+UPLOAD_FOLDER = os.path.join(DATA_DIR, "uploads")
 ALLOWED_EXT = {"png","jpg","jpeg","gif","webp","mp4","webm"}
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "library2026")
 UTC5 = timezone(timedelta(hours=5))
 
+os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def allowed(filename):
