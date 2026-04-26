@@ -39,8 +39,11 @@ def allowed(filename, ftype="img"):
     return False
 
 def is_valid_video_url(url):
-    """Проверяет является ли URL видео YouTube или Vimeo"""
-    return "youtube.com" in url or "youtu.be" in url or "vimeo.com" in url
+    """Проверяет является ли URL видео (YouTube, Vimeo, Facebook, Instagram)"""
+    return ("youtube.com" in url or "youtu.be" in url or 
+            "vimeo.com" in url or 
+            "facebook.com" in url or "fb.watch" in url or
+            "instagram.com" in url)
 
 def now5():
     """Текущее время в UTC+5"""
