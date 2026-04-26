@@ -97,10 +97,10 @@
         {% set ext = item['image'].rsplit('.',1)[1].lower() if '.' in item['image'] else '' %}
         {% if ext in ['mp4','webm'] %}
         <video class="news-card-img" muted loop autoplay playsinline style="height:200px;width:100%;object-fit:cover">
-          <source src="/static/uploads/{{item['image']}}">
+          <source src="/upload/{{item['image']}}">
         </video>
         {% else %}
-        <img class="news-card-img" src="/static/uploads/{{item['image']}}" alt="">
+        <img class="news-card-img" src="/upload/{{item['image']}}" alt="">
         {% endif %}
       </a>
       {% else %}
