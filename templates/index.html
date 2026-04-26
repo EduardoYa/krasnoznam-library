@@ -122,41 +122,20 @@
         {% set images_json = item.images %}
         {% if images_json %}
           {% set images_list = images_json | fromjson %}
-         {% if images_list and images_list|length > 0 %}
-  <!-- ЕСТЬ ИЗОБРАЖЕНИЯ -->
-  <div class="images-gallery">
-    <div class="images-grid">
-      {% for img in images_list %}
-      <div class="image-card">
-        {% if img.type == 'upload' %}
-          <img src="/upload/{{ img.url }}" alt="Изображение" loading="lazy">
+          {% if images_list and images_list|length > 0 %}
+            {% set first_img = images_list[0] %}
+            {% if first_img.type == 'upload' %}
+              <img src="/upload/{{ first_img.url }}" alt="Изображение" loading="lazy">
+            {% else %}
+              <img src="{{ first_img.url }}" alt="Изображение" loading="lazy">
+            {% endif %}
+          {% else %}
+            <div class="news-card-img-placeholder">📰</div>
+          {% endif %}
         {% else %}
-          <img src="{{ img.url }}" alt="Изображение" loading="lazy">
+          <div class="news-card-img-placeholder">📰</div>
         {% endif %}
       </div>
-      {% endfor %}
-    </div>
-  </div>
-{% elif videos_list and videos_list|length > 0 %}
-  <!-- НЕТ ИЗОБРАЖЕНИЙ, НО ЕСТЬ ВИДЕО - ПОКАЗЫВАЕМ ПРЕВЬЮ -->
-  <div class="images-gallery">
-    <div class="images-grid">
-      {% for vid in videos_list %}
-        {% if 'youtube.com' in vid.url or 'youtu.be' in vid.url %}
-          {% set yt_id = vid.url.split('v=')[-1].split('&')[0] if 'youtube.com' in vid.url else vid.url.split('/')[-1] %}
-          <div class="image-card">
-            <img src="https://img.youtube.com/vi/{{ yt_id }}/maxresdefault.jpg" alt="Превью видео" loading="lazy">
-          </div>
-        {% elif 'vimeo.com' in vid.url %}
-          {% set vm_id = vid.url.split('/')[-1] %}
-          <div class="image-card">
-            <img src="https://i.vimeocdn.com/video/{{ vm_id }}.jpg" alt="Превью видео" loading="lazy">
-          </div>
-        {% endif %}
-      {% endfor %}
-    </div>
-  </div>
-{% endif %}
 
       <div class="news-card-body">
         <h3 class="news-card-title">
