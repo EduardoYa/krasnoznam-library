@@ -3,76 +3,18 @@
 {% block content %}
 
 <style>
-.news-detail-header {
-  background: var(--cream2);
-  padding: 3rem 1.5rem;
-  margin-bottom: 2rem;
-}
-.news-detail-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: 1rem;
-  line-height: 1.3;
-}
-.news-detail-meta {
-  color: var(--ink3);
-  font-size: .9rem;
-}
-.news-detail-body {
-  max-width: 800px;
+.news-detail-container {
+  max-width: 900px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 2rem 1.5rem;
 }
-.news-detail-content {
-  font-size: 1rem;
-  line-height: 1.8;
-  color: var(--ink2);
-  margin-bottom: 3rem;
-}
-.media-gallery {
-  margin: 3rem 0;
-}
-.media-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 1.5rem;
-}
-.images-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+
+.news-detail-header {
   margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--border);
 }
-.image-item {
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--cream2);
-  aspect-ratio: 1;
-}
-.image-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.videos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-}
-.video-item {
-  border-radius: 12px;
-  overflow: hidden;
-  background: #000;
-  aspect-ratio: 16 / 9;
-}
-.video-item iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
+
 .back-link {
   display: inline-flex;
   align-items: center;
@@ -80,42 +22,126 @@
   color: var(--blue);
   font-weight: 500;
   transition: all .2s;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
+
 .back-link:hover {
   gap: 10px;
   color: var(--gold);
 }
+
+.news-detail-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.news-detail-meta {
+  color: var(--ink3);
+  font-size: .9rem;
+}
+
+.news-detail-content {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--ink2);
+  margin: 2rem 0;
+}
+
+/* ИЗОБРАЖЕНИЯ */
+.images-gallery {
+  margin: 3rem 0;
+}
+
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.image-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--cream2);
+  box-shadow: 0 2px 10px rgba(26,22,18,.08);
+  transition: all .3s;
+}
+
+.image-card:hover {
+  box-shadow: 0 6px 20px rgba(26,22,18,.12);
+  transform: translateY(-2px);
+}
+
+.image-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 500px;
+  object-fit: cover;
+}
+
+/* ВИДЕО */
+.videos-gallery {
+  margin: 3rem 0;
+}
+
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.video-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 2px 10px rgba(26,22,18,.08);
+}
+
+.video-card iframe,
+.video-card video {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 16 / 9;
+  border: none;
+}
+
+.video-card video {
+  max-height: 600px;
+}
+
+.divider {
+  margin: 3rem 0;
+  border: none;
+  border-top: 1px solid var(--border);
+}
 </style>
 
-<div class="news-detail-header">
-  <div class="news-detail-body">
+<div class="news-detail-container">
+  <!-- ЗАГОЛОВОК -->
+  <div class="news-detail-header">
     <a href="/news" class="back-link">← Назад к новостям</a>
     <h1 class="news-detail-title">{{ item.title_ru }}</h1>
     <div class="news-detail-meta">{{ item.created_at }}</div>
   </div>
-</div>
 
-<div class="news-detail-body">
-  <!-- ОСНОВНОЙ ТЕКСТ -->
-  <div class="news-detail-content">
-    {{ item.body_ru | safe }}
-  </div>
-
-  <!-- ИЗОБРАЖЕНИЯ -->
+  <!-- ИЗОБРАЖЕНИЯ (СВЕРХУ) -->
   {% set images_json = item.images %}
   {% if images_json %}
     {% set images_list = images_json | fromjson %}
     {% if images_list and images_list|length > 0 %}
-    <div class="media-gallery">
-      <h2 class="media-title">🖼️ Изображения</h2>
+    <div class="images-gallery">
       <div class="images-grid">
         {% for img in images_list %}
-        <div class="image-item">
+        <div class="image-card">
           {% if img.type == 'upload' %}
-            <img src="/upload/{{ img.url }}" alt="Изображение">
+            <img src="/upload/{{ img.url }}" alt="Изображение" loading="lazy">
           {% else %}
-            <img src="{{ img.url }}" alt="Изображение">
+            <img src="{{ img.url }}" alt="Изображение" loading="lazy">
           {% endif %}
         </div>
         {% endfor %}
@@ -123,32 +149,66 @@
     </div>
     {% endif %}
   {% endif %}
+
+  <!-- ОСНОВНОЙ ТЕКСТ -->
+  <div class="news-detail-content">
+    {{ item.body_ru | safe }}
+  </div>
 
   <!-- ВИДЕО -->
   {% set videos_json = item.videos %}
   {% if videos_json %}
     {% set videos_list = videos_json | fromjson %}
     {% if videos_list and videos_list|length > 0 %}
-    <div class="media-gallery">
-      <h2 class="media-title">🎬 Видео</h2>
+    <div class="videos-gallery">
       <div class="videos-grid">
         {% for vid in videos_list %}
-        <div class="video-item">
+        <div class="video-card">
           {% if vid.type == 'upload' %}
-            <video controls style="width:100%;height:100%">
+            <!-- ЗАГРУЖЕННОЕ ВИДЕО С ПЛЕЕРОМ -->
+            <video controls controlsList="nodownload" style="width:100%;aspect-ratio:16/9;display:block">
               <source src="/upload/{{ vid.url }}" type="video/mp4">
               Ваш браузер не поддерживает видео
             </video>
-          {% else %}
-            <!-- YouTube видео -->
-            {% if 'youtube' in vid.url or 'youtu.be' in vid.url %}
-              {% set yt_id = vid.url.split('v=')[-1].split('&')[0] %}
-              <iframe src="https://www.youtube.com/embed/{{ yt_id }}" allowfullscreen></iframe>
-            <!-- Vimeo видео -->
-            {% elif 'vimeo' in vid.url %}
-              {% set vm_id = vid.url.split('/')[-1] %}
-              <iframe src="https://player.vimeo.com/video/{{ vm_id }}" allowfullscreen></iframe>
-            {% endif %}
+
+          {% elif 'youtube.com' in vid.url or 'youtu.be' in vid.url %}
+            <!-- YOUTUBE -->
+            {% set yt_id = vid.url.split('v=')[-1].split('&')[0] if 'youtube.com' in vid.url else vid.url.split('/')[-1] %}
+            <iframe 
+              src="https://www.youtube.com/embed/{{ yt_id }}"
+              allowfullscreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              loading="lazy">
+            </iframe>
+
+          {% elif 'vimeo.com' in vid.url %}
+            <!-- VIMEO -->
+            {% set vm_id = vid.url.split('/')[-1] %}
+            <iframe 
+              src="https://player.vimeo.com/video/{{ vm_id }}"
+              allowfullscreen
+              allow="autoplay; picture-in-picture"
+              loading="lazy">
+            </iframe>
+
+          {% elif 'facebook.com' in vid.url or 'fb.watch' in vid.url %}
+            <!-- FACEBOOK -->
+            {% set fb_id = vid.url.split('/')[-1] %}
+            <iframe
+              src="https://www.facebook.com/plugins/video.php?href={{ vid.url | urlencode }}&width=500&show_text=false"
+              allowfullscreen
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+              loading="lazy">
+            </iframe>
+
+          {% elif 'instagram.com' in vid.url %}
+            <!-- INSTAGRAM -->
+            <iframe
+              src="https://www.instagram.com/p/{{ vid.url.split('/')[-2] }}/embed"
+              allowfullscreen
+              loading="lazy">
+            </iframe>
+
           {% endif %}
         </div>
         {% endfor %}
@@ -157,9 +217,8 @@
     {% endif %}
   {% endif %}
 
-  <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border)">
-    <a href="/news" class="back-link">← Назад к новостям</a>
-  </div>
+  <hr class="divider">
+  <a href="/news" class="back-link">← Назад к новостям</a>
 </div>
 
 {% endblock %}
