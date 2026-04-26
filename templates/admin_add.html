@@ -1,157 +1,564 @@
 {% extends "base.html" %}
 {% block title %}Добавить новость{% endblock %}
 {% block head %}
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <style>
-.tab-pane { display:none; }
-.tab-pane.active { display:block; }
-.lang-tab { 
-  padding:12px 24px;
-  border:none;
-  border-bottom:3px solid transparent;
-  background:none;
-  font-family:'Geologica',sans-serif;
-  font-size:.95rem;
-  cursor:pointer;
-  color:var(--ink3);
-  transition:all .3s;
-  font-weight:500;
-}
-.lang-tab.active { 
-  color:var(--blue);
-  border-bottom-color:var(--blue);
-  font-weight:600;
-}
-.lang-tab:hover {
-  color:var(--ink);
+.editor-container {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.form-group { margin-bottom:1.5rem; }
+.ql-toolbar {
+  background: var(--cream2);
+  border-bottom: 1px solid var(--border) !important;
+  padding: 10px !important;
+}
+
+.ql-container {
+  font-family: 'Geologica', sans-serif;
+  font-size: 16px;
+  min-height: 200px;
+}
+
+.ql-editor {
+  padding: 20px;
+}
+
+.media-section {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.media-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all .3s;
+  background: var(--cream2);
+}
+
+.upload-zone:hover {
+  border-color: var(--blue);
+  background: rgba(42,95,143,.05);
+}
+
+.upload-zone.dragover {
+  border-color: var(--gold);
+  background: rgba(181,137,42,.05);
+  transform: scale(1.02);
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.upload-text {
+  color: var(--ink2);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.upload-hint {
+  color: var(--ink3);
+  font-size: .85rem;
+}
+
+.url-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.url-label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.url-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: monospace;
+  font-size: .85rem;
+  min-height: 80px;
+  resize: vertical;
+  transition: all .2s;
+}
+
+.url-textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(42,95,143,.08);
+}
+
+.media-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.media-item {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--cream2);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.media-item img,
+.media-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.media-item-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(143,42,42,.8);
+  color: #fff;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+  font-size: .9rem;
+}
+
+.media-item-remove:hover {
+  background: var(--red);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
 .form-label {
-  display:block;
-  margin-bottom:8px;
-  font-weight:600;
-  color:var(--ink);
-  font-size:.95rem;
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--ink);
+  font-size: .95rem;
 }
-.form-input, .form-textarea {
-  width:100%;
-  padding:12px 14px;
-  border:1px solid var(--border);
-  border-radius:10px;
-  font-family:'Geologica',sans-serif;
-  font-size:.95rem;
-  color:var(--ink);
-  transition:all .2s;
+
+.form-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Geologica', sans-serif;
+  font-size: .95rem;
+  color: var(--ink);
+  transition: all .2s;
 }
-.form-input:focus, .form-textarea:focus {
-  outline:none;
-  border-color:var(--blue);
-  box-shadow:0 0 0 3px rgba(42,95,143,0.08);
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(42,95,143,.08);
 }
-.form-textarea {
-  resize:vertical;
-  min-height:140px;
-}
-.form-hint {
-  font-size:.8rem;
-  color:var(--ink3);
-  margin-top:6px;
-}
+
 .form-check {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  cursor:pointer;
-  user-select:none;
-  font-size:.95rem;
-  color:var(--ink2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
 }
-.form-check input[type="checkbox"] {
-  width:20px;
-  height:20px;
-  cursor:pointer;
-  accent-color:var(--blue);
+
+.form-check input {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--blue);
+}
+
+.lang-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.lang-tab {
+  padding: 12px 24px;
+  border: none;
+  background: transparent;
+  font-size: .95rem;
+  font-weight: 500;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: all .2s;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.lang-tab.active {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+  color: #fff;
+  border: none;
+  padding: 13px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: .95rem;
+  cursor: pointer;
+  transition: all .3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(181,137,42,.25);
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(181,137,42,.35);
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 2px solid var(--border);
+  color: var(--ink2);
+  padding: 11px 24px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: .95rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all .2s;
+}
+
+.btn-cancel:hover {
+  background: var(--cream2);
+  border-color: var(--ink3);
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.section-box {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.header-text h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: .5rem;
+}
+
+.header-text p {
+  color: var(--ink3);
+  font-size: .95rem;
+}
+
+.back-btn {
+  background: rgba(42,95,143,.08);
+  color: var(--blue);
+  border: 1px solid rgba(42,95,143,.2);
+  padding: 10px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: .9rem;
+  font-weight: 500;
+  transition: all .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.back-btn:hover {
+  background: rgba(42,95,143,.15);
 }
 </style>
 {% endblock %}
+
 {% block content %}
-<div style="max-width:800px;margin:0 auto;padding:2.5rem 1.5rem">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:2px solid var(--border)">
-    <div>
-      <h1 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--ink);margin-bottom:.5rem">Добавить новость</h1>
-      <p style="color:var(--ink3);font-size:.95rem">Заполните поля и нажмите «Опубликовать»</p>
+<div style="max-width:1000px;margin:0 auto;padding:2.5rem 1.5rem">
+  <div class="header-section">
+    <div class="header-text">
+      <h1>📰 Новая новость</h1>
+      <p>Создайте красивую новость с текстом, изображениями и видео</p>
     </div>
-    <a href="/admin" style="background:rgba(42,95,143,.08);color:var(--blue);border:1px solid rgba(42,95,143,.2);padding:10px 18px;border-radius:10px;text-decoration:none;font-size:.9rem;font-weight:500;transition:all .2s;display:inline-flex;align-items:center;gap:6px" onmouseover="this.style.background='rgba(42,95,143,.15)'" onmouseout="this.style.background='rgba(42,95,143,.08)'">← Назад</a>
+    <a href="/admin" class="back-btn">← Назад</a>
   </div>
 
   <form method="POST" enctype="multipart/form-data">
 
-    <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:0;margin-bottom:1.5rem;overflow:hidden">
-      <div style="border-bottom:1px solid var(--border);display:flex;gap:0">
-        <button type="button" class="lang-tab active" onclick="switchLang('ru',this)" style="border-bottom:3px solid var(--blue)">🇷🇺 Русский</button>
-        <button type="button" class="lang-tab" onclick="switchLang('kz',this)">🇰🇿 Қазақша</button>
+    <!-- ЗАГОЛОВОК И ОСНОВНОЙ ТЕКСТ -->
+    <div class="section-box">
+      <div class="section-title">📝 Содержание</div>
+
+      <div class="lang-tabs">
+        <button type="button" class="lang-tab active" onclick="switchTab('ru')">🇷🇺 Русский</button>
+        <button type="button" class="lang-tab" onclick="switchTab('kz')">🇰🇿 Қазақша</button>
       </div>
 
-      <div style="padding:2rem">
-        <div id="pane-ru" class="tab-pane active">
-          <div class="form-group">
-            <label class="form-label">Заголовок (русский) <span style="color:var(--red)">*</span></label>
-            <input type="text" name="title_ru" class="form-input" placeholder="Например: Поздравляем с Наурызом!" required>
-          </div>
-          <div class="form-group" style="margin:0">
-            <label class="form-label">Текст новости (русский)</label>
-            <textarea name="body_ru" class="form-textarea" placeholder="Напишите текст новости..."></textarea>
-            <div class="form-hint">Можно вставлять текст из Word или другого редактора</div>
-          </div>
+      <div id="tab-ru" class="tab-pane active">
+        <div class="form-group">
+          <label class="form-label">Заголовок (русский) <span style="color:var(--red)">*</span></label>
+          <input type="text" name="title_ru" class="form-input" placeholder="Введите заголовок новости..." required>
         </div>
 
-        <div id="pane-kz" class="tab-pane">
-          <div class="form-group">
-            <label class="form-label">Тақырып (қазақша)</label>
-            <input type="text" name="title_kz" class="form-input" placeholder="Мысалы: Наурызбен құттықтаймыз!">
-            <div class="form-hint">Если оставить пустым — будет отображаться русский текст</div>
+        <div class="form-group">
+          <label class="form-label">Текст новости (русский)</label>
+          <div class="editor-container">
+            <div id="editor-ru"></div>
           </div>
-          <div class="form-group" style="margin:0">
-            <label class="form-label">Мәтін (қазақша)</label>
-            <textarea name="body_kz" class="form-textarea" placeholder="Жаңалық мәтінін жазыңыз..."></textarea>
-          </div>
+          <input type="hidden" name="body_ru" id="body_ru">
         </div>
       </div>
-    </div>
 
-    <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:2rem">
-      <div class="form-group" style="margin-bottom:1rem">
-        <label class="form-label">📷 Фото или видео</label>
-        <input type="file" name="image" class="form-input" accept="image/*,video/mp4,video/webm"
-               style="padding:10px;cursor:pointer">
-        <div class="form-hint">Форматы: JPG, PNG, GIF, MP4 · Рекомендуемый размер фото: 1200×630</div>
+      <div id="tab-kz" class="tab-pane">
+        <div class="form-group">
+          <label class="form-label">Тақырып (қазақша)</label>
+          <input type="text" name="title_kz" class="form-input" placeholder="Жаңалықтың тақырыбын енгізіңіз...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Мәтін (қазақша)</label>
+          <div class="editor-container">
+            <div id="editor-kz"></div>
+          </div>
+          <input type="hidden" name="body_kz" id="body_kz">
+        </div>
       </div>
-      <label class="form-check">
+
+      <label class="form-check" style="margin-top:1.5rem">
         <input type="checkbox" name="pinned">
-        <span>📌 Закрепить новость (будет показана первой)</span>
+        <span>📌 Закрепить новость (будет первой в списке)</span>
       </label>
     </div>
 
+    <!-- ИЗОБРАЖЕНИЯ -->
+    <div class="media-section">
+      <div class="media-title">🖼️ Изображения</div>
+
+      <div>
+        <label class="form-label">Загрузить с компьютера</label>
+        <div class="upload-zone" id="imageUploadZone" onclick="document.getElementById('imageInput').click()">
+          <div class="upload-icon">📁</div>
+          <div class="upload-text">Нажми или перетащи изображения</div>
+          <div class="upload-hint">JPG, PNG, GIF, WebP • Можно несколько файлов</div>
+        </div>
+        <input type="file" id="imageInput" name="images[]" accept="image/*" multiple onchange="handleImages(event)">
+        <div class="media-preview" id="imagePreview"></div>
+      </div>
+
+      <div class="url-section">
+        <label class="url-label">Или вставь ссылки на изображения</label>
+        <textarea name="image_urls" class="url-textarea" placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"></textarea>
+        <div class="form-hint" style="margin-top:.5rem">По одной ссылке на строку. Работает с любыми интернет-картинками</div>
+      </div>
+    </div>
+
+    <!-- ВИДЕО -->
+    <div class="media-section">
+      <div class="media-title">🎬 Видео</div>
+
+      <div>
+        <label class="form-label">Загрузить видеофайл</label>
+        <div class="upload-zone" id="videoUploadZone" onclick="document.getElementById('videoInput').click()">
+          <div class="upload-icon">📹</div>
+          <div class="upload-text">Нажми или перетащи видео</div>
+          <div class="upload-hint">MP4, WebM, MOV, AVI</div>
+        </div>
+        <input type="file" id="videoInput" name="videos[]" accept="video/*" multiple onchange="handleVideos(event)">
+        <div class="media-preview" id="videoPreview"></div>
+      </div>
+
+      <div class="url-section">
+        <label class="url-label">Или вставь ссылки на YouTube/Vimeo</label>
+        <textarea name="video_urls" class="url-textarea" placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ&#10;https://vimeo.com/123456789"></textarea>
+        <div class="form-hint" style="margin-top:.5rem">Поддерживаются YouTube и Vimeo</div>
+      </div>
+    </div>
+
+    <!-- КНОПКИ -->
     <div style="display:flex;gap:12px;flex-wrap:wrap">
-      <button type="submit" style="flex:1;min-width:200px;background:linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);color:#fff;border:none;padding:14px 24px;border-radius:12px;font-weight:600;font-size:.95rem;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 15px rgba(181,137,42,0.25)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 25px rgba(181,137,42,0.35)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(181,137,42,0.25)'">
-        ✅ Опубликовать
-      </button>
-      <a href="/admin" style="background:transparent;border:2px solid var(--border);color:var(--ink2);padding:12px 24px;border-radius:12px;font-weight:500;font-size:.95rem;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:6px" onmouseover="this.style.background='var(--cream2)';this.style.borderColor='var(--ink3)'" onmouseout="this.style.background='transparent';this.style.borderColor='var(--border)'">Отмена</a>
+      <button type="submit" class="btn-submit">✅ Опубликовать новость</button>
+      <a href="/admin" class="btn-cancel">Отмена</a>
     </div>
   </form>
 </div>
-{% endblock %}
-{% block scripts %}
+
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script>
-function switchLang(lang, btn) {
+// Инициализируем редакторы
+const quillRu = new Quill('#editor-ru', {
+  theme: 'snow',
+  modules: {
+    toolbar: [
+      [{ 'font': ['Arial', 'Georgia', 'Courier New', 'Times New Roman', 'Trebuchet MS'] }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      ['bold', 'italic', 'underline'],
+      [{ 'align': [] }],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      ['blockquote', 'code-block'],
+      ['link', 'image'],
+      ['clean']
+    ]
+  }
+});
+
+const quillKz = new Quill('#editor-kz', {
+  theme: 'snow',
+  modules: {
+    toolbar: [
+      [{ 'font': ['Arial', 'Georgia', 'Courier New', 'Times New Roman', 'Trebuchet MS'] }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      ['bold', 'italic', 'underline'],
+      [{ 'align': [] }],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      ['blockquote', 'code-block'],
+      ['link', 'image'],
+      ['clean']
+    ]
+  }
+});
+
+// Переключение языков
+function switchTab(lang) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.lang-tab').forEach(b => {
-    b.classList.remove('active');
-    b.style.borderBottomColor = 'transparent';
-  });
-  document.getElementById('pane-'+lang).classList.add('active');
-  btn.classList.add('active');
-  btn.style.borderBottomColor = 'var(--blue)';
+  document.querySelectorAll('.lang-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + lang).classList.add('active');
+  event.target.classList.add('active');
 }
+
+// Сохранение содержимого редакторов перед отправкой
+document.querySelector('form').addEventListener('submit', function() {
+  document.getElementById('body_ru').value = quillRu.root.innerHTML;
+  document.getElementById('body_kz').value = quillKz.root.innerHTML;
+});
+
+// Обработка изображений
+function handleImages(e) {
+  const preview = document.getElementById('imagePreview');
+  preview.innerHTML = '';
+  for (let file of e.target.files) {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const div = document.createElement('div');
+      div.className = 'media-item';
+      div.innerHTML = `<img src="${evt.target.result}" alt="preview">`;
+      preview.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Обработка видео
+function handleVideos(e) {
+  const preview = document.getElementById('videoPreview');
+  preview.innerHTML = '';
+  for (let file of e.target.files) {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const div = document.createElement('div');
+      div.className = 'media-item';
+      div.innerHTML = `<video style="width:100%;height:100%;object-fit:cover"><source src="${evt.target.result}"></video>`;
+      preview.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Drag & Drop для изображений
+const imageZone = document.getElementById('imageUploadZone');
+['dragover', 'dragenter'].forEach(e => {
+  imageZone.addEventListener(e, () => imageZone.classList.add('dragover'));
+});
+imageZone.addEventListener('dragleave', () => imageZone.classList.remove('dragover'));
+imageZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  imageZone.classList.remove('dragover');
+  document.getElementById('imageInput').files = e.dataTransfer.files;
+  handleImages({target: {files: e.dataTransfer.files}});
+});
+
+// Drag & Drop для видео
+const videoZone = document.getElementById('videoUploadZone');
+['dragover', 'dragenter'].forEach(e => {
+  videoZone.addEventListener(e, () => videoZone.classList.add('dragover'));
+});
+videoZone.addEventListener('dragleave', () => videoZone.classList.remove('dragover'));
+videoZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  videoZone.classList.remove('dragover');
+  document.getElementById('videoInput').files = e.dataTransfer.files;
+  handleVideos({target: {files: e.dataTransfer.files}});
+});
 </script>
 {% endblock %}
