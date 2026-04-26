@@ -1,66 +1,165 @@
 {% extends "base.html" %}
-{% block title %}{{ item['title_ru'] }}{% endblock %}
-{% block head %}
-<style>
-.news-detail { max-width: 760px; margin: 0 auto; }
-.detail-title {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(1.6rem, 4vw, 2.4rem);
-  font-weight: 700; line-height: 1.2;
-  color: var(--ink); letter-spacing: -.02em;
-  margin-bottom: .75rem;
-}
-.detail-meta { display: flex; align-items: center; gap: 12px; color: var(--ink3); font-size: .82rem; margin-bottom: 2rem; flex-wrap: wrap; }
-.detail-img { width: 100%; border-radius: var(--r); margin-bottom: 2rem; max-height: 460px; object-fit: cover; }
-.detail-body { font-size: 1rem; line-height: 1.85; color: var(--ink2); }
-.detail-body p { margin-bottom: 1rem; }
-.detail-body img { border-radius: var(--r); margin: 1rem 0; }
-</style>
-{% endblock %}
+{% block title %}{{ item.title_ru }}{% endblock %}
 {% block content %}
-<div class="container">
-  <div style="margin-bottom:1.5rem">
-    <a href="/news" style="font-size:.85rem;color:var(--ink3)" data-ru="← Все новости" data-kz="← Барлық жаңалықтар">← Все новости</a>
+
+<style>
+.news-detail-header {
+  background: var(--cream2);
+  padding: 3rem 1.5rem;
+  margin-bottom: 2rem;
+}
+.news-detail-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+.news-detail-meta {
+  color: var(--ink3);
+  font-size: .9rem;
+}
+.news-detail-body {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+.news-detail-content {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--ink2);
+  margin-bottom: 3rem;
+}
+.media-gallery {
+  margin: 3rem 0;
+}
+.media-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+}
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.image-item {
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--cream2);
+  aspect-ratio: 1;
+}
+.image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+.video-item {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  aspect-ratio: 16 / 9;
+}
+.video-item iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--blue);
+  font-weight: 500;
+  transition: all .2s;
+  margin-bottom: 2rem;
+}
+.back-link:hover {
+  gap: 10px;
+  color: var(--gold);
+}
+</style>
+
+<div class="news-detail-header">
+  <div class="news-detail-body">
+    <a href="/news" class="back-link">← Назад к новостям</a>
+    <h1 class="news-detail-title">{{ item.title_ru }}</h1>
+    <div class="news-detail-meta">{{ item.created_at }}</div>
   </div>
-  <article class="news-detail fade-in">
-    {% if item['pinned'] %}
-    <div style="margin-bottom:1rem"><span class="badge badge-gold" data-ru="📌 Закреплено" data-kz="📌 Бекітілген">📌 Закреплено</span></div>
-    {% endif %}
-
-    <h1 class="detail-title lang-title"
-        data-ru="{{item['title_ru']}}"
-        data-kz="{{item['title_kz'] or item['title_ru']}}">
-      {{item['title_ru']}}
-    </h1>
-    <div class="detail-meta">
-      <span>📅 {{item['created_at']}}</span>
-    </div>
-
-    {% if item['image'] %}
-      {% set ext = item['image'].rsplit('.',1)[1].lower() if '.' in item['image'] else '' %}
-      {% if ext in ['mp4','webm'] %}
-      <video class="detail-img" controls style="background:#000">
-        <source src="/upload/{{item['image']}}">
-      </video>
-      {% else %}
-      <img class="detail-img" src="/upload/{{item['image']}}" alt="">
-      {% endif %}
-    {% endif %}
-
-    <div class="detail-body lang-body"
-         data-ru="{{item['body_ru']}}"
-         data-kz="{{item['body_kz'] or item['body_ru']}}">
-      {{item['body_ru']|safe}}
-    </div>
-
-    {% if session.get('admin') %}
-    <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;gap:8px">
-      <a href="/admin/edit/{{item['id']}}" class="btn btn-outline btn-sm">✏️ Редактировать</a>
-      <form action="/admin/delete/{{item['id']}}" method="POST" onsubmit="return confirm('Удалить новость?')">
-        <button type="submit" class="btn btn-danger btn-sm">🗑 Удалить</button>
-      </form>
-    </div>
-    {% endif %}
-  </article>
 </div>
+
+<div class="news-detail-body">
+  <!-- ОСНОВНОЙ ТЕКСТ -->
+  <div class="news-detail-content">
+    {{ item.body_ru | safe }}
+  </div>
+
+  <!-- ИЗОБРАЖЕНИЯ -->
+  {% set images_json = item.images %}
+  {% if images_json %}
+    {% set images_list = images_json | fromjson %}
+    {% if images_list and images_list|length > 0 %}
+    <div class="media-gallery">
+      <h2 class="media-title">🖼️ Изображения</h2>
+      <div class="images-grid">
+        {% for img in images_list %}
+        <div class="image-item">
+          {% if img.type == 'upload' %}
+            <img src="/upload/{{ img.url }}" alt="Изображение">
+          {% else %}
+            <img src="{{ img.url }}" alt="Изображение">
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  {% endif %}
+
+  <!-- ВИДЕО -->
+  {% set videos_json = item.videos %}
+  {% if videos_json %}
+    {% set videos_list = videos_json | fromjson %}
+    {% if videos_list and videos_list|length > 0 %}
+    <div class="media-gallery">
+      <h2 class="media-title">🎬 Видео</h2>
+      <div class="videos-grid">
+        {% for vid in videos_list %}
+        <div class="video-item">
+          {% if vid.type == 'upload' %}
+            <video controls style="width:100%;height:100%">
+              <source src="/upload/{{ vid.url }}" type="video/mp4">
+              Ваш браузер не поддерживает видео
+            </video>
+          {% else %}
+            <!-- YouTube видео -->
+            {% if 'youtube' in vid.url or 'youtu.be' in vid.url %}
+              {% set yt_id = vid.url.split('v=')[-1].split('&')[0] %}
+              <iframe src="https://www.youtube.com/embed/{{ yt_id }}" allowfullscreen></iframe>
+            <!-- Vimeo видео -->
+            {% elif 'vimeo' in vid.url %}
+              {% set vm_id = vid.url.split('/')[-1] %}
+              <iframe src="https://player.vimeo.com/video/{{ vm_id }}" allowfullscreen></iframe>
+            {% endif %}
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  {% endif %}
+
+  <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border)">
+    <a href="/news" class="back-link">← Назад к новостям</a>
+  </div>
+</div>
+
 {% endblock %}
