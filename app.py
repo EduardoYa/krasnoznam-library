@@ -7,6 +7,13 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "library-secret-2026")
 
+@app.template_filter('fromjson')
+def fromjson_filter(value):
+    try:
+        return json.loads(value or '[]')
+    except:
+        return []
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = "/data"
 DB_NAME  = os.path.join(DATA_DIR, "library.db")
