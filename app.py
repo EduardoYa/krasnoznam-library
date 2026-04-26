@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "library-secret-2026")
+app.config['UPLOAD_FOLDER'] = '/data/uploads'  # ДОБАВЬ ЭТУ СТРОКУ
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = "/data"  # Volume хранилище
@@ -168,6 +169,11 @@ def admin_edit(nid):
                 (title_ru,title_kz,body_ru,body_kz,image_path,pinned,nid))
         return redirect(url_for("admin_panel"))
     return render_template("admin_edit.html", item=item)
+    
+@app.route("/upload/<path:filename>")
+def download_file(filename):
+    from flask import send_from_directory
+    return send_from_directory('/data/uploads', filename)
 
 @app.route("/admin/delete/<int:nid>", methods=["POST"])
 @require_admin
