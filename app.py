@@ -174,5 +174,10 @@ def admin_delete(nid):
         conn.execute("DELETE FROM news WHERE id=?", (nid,))
     return redirect(url_for("admin_panel"))
 
+@app.route("/health")
+def health():
+    return {"status": "healthy"}, 200
+
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    port = int(os.getenv("PORT", 5000))
+    app.run(debug=False, host="0.0.0.0", port=port)
