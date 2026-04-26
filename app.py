@@ -30,7 +30,6 @@ def allowed(filename, ftype="img"):
     return False
 
 def is_valid_video_url(url):
-    """Проверить валидность URL видео"""
     if "youtube.com" in url or "youtu.be" in url or "vimeo.com" in url:
         return True
     return False
@@ -45,7 +44,7 @@ def get_db():
     try:
         yield conn
         conn.commit()
-    except:
+    except Exception as e:
         conn.rollback()
         raise
     finally:
@@ -53,37 +52,67 @@ def get_db():
 
 def init_db():
     with get_db() as conn:
-        conn.execute("""CREATE TABLE IF NOT EXISTS news (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title_ru TEXT, title_kz TEXT,
-            body_ru TEXT, body_kz TEXT,
-            images TEXT, videos TEXT,
-            created_at TEXT, pinned INTEGER DEFAULT 0
-        )""")
+        # Проверяем существует ли таблица
+        cursor = conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='news'"
+        )
+        exists = cursor.fetchone()
         
-        # Миграция старых данных если существует старая таблица
-        try:
-            old_data = conn.execute("SELECT * FROM news LIMIT 1").fetchone()
-            if old_data and "image" in dict(old_data):
-                # Есть старая структура, нужна миграция
-                pass
-        except:
-            pass
-        
-        if conn.execute("SELECT count(*) FROM news").fetchone()[0] == 0:
+        if not exists:
+            # Создаем новую таблицу
+            conn.execute("""CREATE TABLE news (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title_ru TEXT, title_kz TEXT,
+                body_ru TEXT, body_kz TEXT,
+                images TEXT DEFAULT '[]',
+                videos TEXT DEFAULT '[]',
+                created_at TEXT, pinned INTEGER DEFAULT 0
+            )""")
+            
+            # Добавляем примеры
             conn.executemany("""INSERT INTO news
-                (title_ru,title_kz,body_ru,body_kz,images,videos,created_at) VALUES (?,?,?,?,?,?,?)""", [
+                (title_ru,title_kz,body_ru,body_kz,images,videos,created_at) 
+                VALUES (?,?,?,?,?,?,?)""", [
                 ("Добро пожаловать на наш сайт!","Сайтымызға қош келдіңіз!",
-                 "Сельская библиотека села Краснознаменное открыла свой официальный сайт. Здесь вы найдёте актуальные новости, график работы и информацию о наших услугах.",
-                 "Краснознаменное ауылының ауылдық кітапханасы өзінің ресми сайтын ашты. Мұнда сіз өзекті жаңалықтарды, жұмыс кестесін және қызметтеріміз туралы ақпаратты таба аласыз.",
-                 json.dumps([]), json.dumps([]),
-                 now5().strftime("%Y-%m-%d %H:%M")),
+                 "<p>Сельская библиотека села Краснознаменное открыла свой официальный сайт.</p>",
+                 "<p>Краснознаменное ауылының ауылдық кітапханасы өзінің ресми сайтын ашты.</p>",
+                 "[]", "[]", now5().strftime("%Y-%m-%d %H:%M")),
                 ("Праздник Наурыз","Наурыз мерекесі",
-                 "Поздравляем всех жителей с праздником Наурыз! Пусть этот день принесёт радость, мир и процветание каждому дому.",
-                 "Барлық тұрғындарды Наурыз мерекесімен құттықтаймыз! Бұл күн әр үйге қуаныш, бейбітшілік және молшылық әкелсін.",
-                 json.dumps([]), json.dumps([]),
-                 now5().strftime("%Y-%m-%d %H:%M")),
+                 "<p>Поздравляем всех жителей с праздником Наурыз!</p>",
+                 "<p>Барлық тұрғындарды Наурыз мерекесімен құттықтаймыз!</p>",
+                 "[]", "[]", now5().strftime("%Y-%m-%d %H:%M")),
             ])
+        else:
+            # Проверяем нужна ли миграция (если есть старое поле 'image')
+            cursor = conn.execute("PRAGMA table_info(news)")
+            columns = [row[1] for row in cursor.fetchall()]
+            
+            if 'image' in columns and 'images' not in columns:
+                # Нужна миграция - добавляем новые колонки
+                try:
+                    conn.execute("ALTER TABLE news ADD COLUMN images TEXT DEFAULT '[]'")
+                    conn.execute("ALTER TABLE news ADD COLUMN videos TEXT DEFAULT '[]'")
+                    
+                    # Мигрируем старые картинки
+                    old_news = conn.execute("SELECT id, image FROM news WHERE image IS NOT NULL").fetchall()
+                    for row in old_news:
+                        images = [{"type": "upload", "url": row['image']}] if row['image'] else []
+                        conn.execute(
+                            "UPDATE news SET images = ? WHERE id = ?",
+                            (json.dumps(images), row['id'])
+                        )
+                except:
+                    pass
+            elif 'images' not in columns:
+                # Добавляем новые колонки если их нет
+                try:
+                    conn.execute("ALTER TABLE news ADD COLUMN images TEXT DEFAULT '[]'")
+                except:
+                    pass
+                try:
+                    conn.execute("ALTER TABLE news ADD COLUMN videos TEXT DEFAULT '[]'")
+                except:
+                    pass
 
 init_db()
 
@@ -156,17 +185,18 @@ def admin_add():
         body_kz  = request.form.get("body_kz","").strip()
         pinned   = 1 if request.form.get("pinned") else 0
         
-        # Обработка изображений
         images = []
-        
         # Загруженные изображения
         image_files = request.files.getlist("images[]")
         for file in image_files:
             if file and file.filename and allowed(file.filename, "img"):
-                ext = file.filename.rsplit(".",1)[1].lower()
-                fname = f"{uuid.uuid4().hex}.{ext}"
-                file.save(os.path.join(UPLOAD_FOLDER, fname))
-                images.append({"type": "upload", "url": fname})
+                try:
+                    ext = file.filename.rsplit(".",1)[1].lower()
+                    fname = f"{uuid.uuid4().hex}.{ext}"
+                    file.save(os.path.join(UPLOAD_FOLDER, fname))
+                    images.append({"type": "upload", "url": fname})
+                except:
+                    pass
         
         # URL изображений
         image_urls = request.form.get("image_urls", "").strip().split('\n')
@@ -175,17 +205,18 @@ def admin_add():
             if url and url.startswith("http"):
                 images.append({"type": "url", "url": url})
         
-        # Обработка видео
         videos = []
-        
         # Загруженные видео
         video_files = request.files.getlist("videos[]")
         for file in video_files:
             if file and file.filename and allowed(file.filename, "vid"):
-                ext = file.filename.rsplit(".",1)[1].lower()
-                fname = f"{uuid.uuid4().hex}.{ext}"
-                file.save(os.path.join(UPLOAD_FOLDER, fname))
-                videos.append({"type": "upload", "url": fname})
+                try:
+                    ext = file.filename.rsplit(".",1)[1].lower()
+                    fname = f"{uuid.uuid4().hex}.{ext}"
+                    file.save(os.path.join(UPLOAD_FOLDER, fname))
+                    videos.append({"type": "upload", "url": fname})
+                except:
+                    pass
         
         # URL видео
         video_urls = request.form.get("video_urls", "").strip().split('\n')
@@ -194,13 +225,18 @@ def admin_add():
             if url and is_valid_video_url(url):
                 videos.append({"type": "url", "url": url})
         
-        with get_db() as conn:
-            conn.execute("""INSERT INTO news (title_ru,title_kz,body_ru,body_kz,images,videos,created_at,pinned)
-                VALUES (?,?,?,?,?,?,?,?)""",
-                (title_ru, title_kz, body_ru, body_kz, 
-                 json.dumps(images), json.dumps(videos),
-                 now5().strftime("%Y-%m-%d %H:%M"), pinned))
-        return redirect(url_for("admin_panel"))
+        try:
+            with get_db() as conn:
+                conn.execute("""INSERT INTO news 
+                    (title_ru,title_kz,body_ru,body_kz,images,videos,created_at,pinned)
+                    VALUES (?,?,?,?,?,?,?,?)""",
+                    (title_ru, title_kz, body_ru, body_kz, 
+                     json.dumps(images), json.dumps(videos),
+                     now5().strftime("%Y-%m-%d %H:%M"), pinned))
+            return redirect(url_for("admin_panel"))
+        except Exception as e:
+            return f"Ошибка при сохранении: {str(e)}", 500
+    
     return render_template("admin_add.html")
 
 @app.route("/admin/edit/<int:nid>", methods=["GET","POST"])
@@ -218,15 +254,17 @@ def admin_edit(nid):
         body_kz  = request.form.get("body_kz","").strip()
         pinned   = 1 if request.form.get("pinned") else 0
         
-        # Обработка изображений (аналогично add)
         images = []
         image_files = request.files.getlist("images[]")
         for file in image_files:
             if file and file.filename and allowed(file.filename, "img"):
-                ext = file.filename.rsplit(".",1)[1].lower()
-                fname = f"{uuid.uuid4().hex}.{ext}"
-                file.save(os.path.join(UPLOAD_FOLDER, fname))
-                images.append({"type": "upload", "url": fname})
+                try:
+                    ext = file.filename.rsplit(".",1)[1].lower()
+                    fname = f"{uuid.uuid4().hex}.{ext}"
+                    file.save(os.path.join(UPLOAD_FOLDER, fname))
+                    images.append({"type": "upload", "url": fname})
+                except:
+                    pass
         
         image_urls = request.form.get("image_urls", "").strip().split('\n')
         for url in image_urls:
@@ -234,15 +272,17 @@ def admin_edit(nid):
             if url and url.startswith("http"):
                 images.append({"type": "url", "url": url})
         
-        # Обработка видео
         videos = []
         video_files = request.files.getlist("videos[]")
         for file in video_files:
             if file and file.filename and allowed(file.filename, "vid"):
-                ext = file.filename.rsplit(".",1)[1].lower()
-                fname = f"{uuid.uuid4().hex}.{ext}"
-                file.save(os.path.join(UPLOAD_FOLDER, fname))
-                videos.append({"type": "upload", "url": fname})
+                try:
+                    ext = file.filename.rsplit(".",1)[1].lower()
+                    fname = f"{uuid.uuid4().hex}.{ext}"
+                    file.save(os.path.join(UPLOAD_FOLDER, fname))
+                    videos.append({"type": "upload", "url": fname})
+                except:
+                    pass
         
         video_urls = request.form.get("video_urls", "").strip().split('\n')
         for url in video_urls:
@@ -250,27 +290,44 @@ def admin_edit(nid):
             if url and is_valid_video_url(url):
                 videos.append({"type": "url", "url": url})
         
-        with get_db() as conn:
-            conn.execute("""UPDATE news SET title_ru=?,title_kz=?,body_ru=?,body_kz=?,images=?,videos=?,pinned=? WHERE id=?""",
-                (title_ru, title_kz, body_ru, body_kz, json.dumps(images), json.dumps(videos), pinned, nid))
-        return redirect(url_for("admin_panel"))
+        try:
+            with get_db() as conn:
+                conn.execute("""UPDATE news 
+                    SET title_ru=?,title_kz=?,body_ru=?,body_kz=?,images=?,videos=?,pinned=? 
+                    WHERE id=?""",
+                    (title_ru, title_kz, body_ru, body_kz, 
+                     json.dumps(images), json.dumps(videos), pinned, nid))
+            return redirect(url_for("admin_panel"))
+        except Exception as e:
+            return f"Ошибка при обновлении: {str(e)}", 500
     
     item_dict = dict(item)
-    item_dict['images'] = json.loads(item['images'] or '[]')
-    item_dict['videos'] = json.loads(item['videos'] or '[]')
+    try:
+        item_dict['images'] = json.loads(item['images'] or '[]') if item['images'] else []
+        item_dict['videos'] = json.loads(item['videos'] or '[]') if item['videos'] else []
+    except:
+        item_dict['images'] = []
+        item_dict['videos'] = []
+    
     return render_template("admin_edit.html", item=item_dict)
 
 @app.route("/admin/delete/<int:nid>", methods=["POST"])
 @require_admin
 def admin_delete(nid):
-    with get_db() as conn:
-        conn.execute("DELETE FROM news WHERE id=?", (nid,))
-    return redirect(url_for("admin_panel"))
+    try:
+        with get_db() as conn:
+            conn.execute("DELETE FROM news WHERE id=?", (nid,))
+        return redirect(url_for("admin_panel"))
+    except:
+        return redirect(url_for("admin_panel"))
 
 @app.route("/upload/<path:filename>")
 def download_file(filename):
     from flask import send_from_directory
-    return send_from_directory(UPLOAD_FOLDER, filename)
+    try:
+        return send_from_directory(UPLOAD_FOLDER, filename)
+    except:
+        return "Файл не найден", 404
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
