@@ -44,6 +44,23 @@ def is_valid_video_url(url):
             "vimeo.com" in url or 
             "facebook.com" in url or "fb.watch" in url or
             "instagram.com" in url)
+    
+def get_video_thumbnail(url):
+    """Получить thumbnail видео для YouTube/Vimeo"""
+    # YouTube
+    if "youtube.com" in url:
+        yt_id = url.split('v=')[-1].split('&')[0]
+        return f"https://img.youtube.com/vi/{yt_id}/maxresdefault.jpg"
+    elif "youtu.be" in url:
+        yt_id = url.split('/')[-1]
+        return f"https://img.youtube.com/vi/{yt_id}/maxresdefault.jpg"
+    
+    # Vimeo
+    elif "vimeo.com" in url:
+        vm_id = url.split('/')[-1]
+        return f"https://i.vimeocdn.com/video/{vm_id}.jpg"
+    
+    return None
 
 def now5():
     """Текущее время в UTC+5"""
