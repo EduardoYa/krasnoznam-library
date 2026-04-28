@@ -285,6 +285,20 @@ footer{
       <div style="margin-top:4px;font-size:.78rem;opacity:.5">© 2026</div>
     </div>
   </div>
+  <div class="nav-right">
+      {% if session.get('admin') %}
+      <a href="/admin/add" class="btn-add-news">➕ Добавить новость</a>
+      {% endif %}
+    
+    <button class="lang-btn" id="langBtn" onclick="toggleLang()" title="Өз тілін өзгерту">
+        <span id="langFlag">🇷🇺</span>
+      </button>
+      
+      {% if session.get('admin') %}
+      <a href="/logout" class="admin-link">Выйти</a>
+      {% endif %}
+      
+      <button class="mob-menu-btn" onclick="toggleMob()">☰</button>
 </footer>
 
 <script>
