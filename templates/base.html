@@ -8,21 +8,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Geologica:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --cream:   #faf7f2;
-  --cream2:  #f2ede4;
-  --cream3:  #e8e0d0;
-  --ink:     #1a1612;
-  --ink2:    #3d3530;
-  --ink3:    #7a6e65;
-  --gold:    #b5892a;
-  --gold2:   #d4a43a;
-  --blue:    #2a5f8f;
-  --blue2:   #3a7ab5;
-  --red:     #8f2a2a;
-  --border:  rgba(26,22,18,0.12);
-  --shadow:  0 2px 20px rgba(26,22,18,0.08);
-  --r:       10px;
+  --cream: #faf7f2;
+  --cream2: #f2ede4;
+  --cream3: #e8e0d0;
+  --ink: #1a1612;
+  --ink2: #3d3530;
+  --ink3: #7a6e65;
+  --gold: #b5892a;
+  --gold2: #d4a43a;
+  --blue: #2a5f8f;
+  --blue2: #3a7ab5;
+  --red: #8f2a2a;
+  --border: rgba(26,22,18,0.12);
 }
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;scroll-behavior:smooth}
 body{
@@ -36,9 +35,9 @@ a{color:var(--blue);text-decoration:none;transition:color .2s}
 a:hover{color:var(--gold)}
 img{max-width:100%;height:auto;display:block}
 
-/* ── NAV ── */
+/* NAV */
 .nav{
-  background:var(--ink);
+  background:var(--ink2);
   position:sticky;top:0;z-index:100;
   border-bottom:2px solid var(--gold);
 }
@@ -48,7 +47,7 @@ img{max-width:100%;height:auto;display:block}
 }
 .nav-logo{
   font-family:'Playfair Display',serif;
-  font-size:1.1rem;font-weight:700;
+  font-size:1rem;font-weight:700;
   color:#fff;white-space:nowrap;
   display:flex;align-items:center;gap:8px;
   letter-spacing:0.01em;
@@ -63,7 +62,7 @@ img{max-width:100%;height:auto;display:block}
 .nav-links a:hover,.nav-links a.active{
   color:#fff;background:rgba(255,255,255,.1);
 }
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px}
 .lang-btn{
   background:transparent;border:none;
   color:var(--gold2);font-family:'Geologica',sans-serif;
@@ -74,13 +73,35 @@ img{max-width:100%;height:auto;display:block}
   min-width:44px;min-height:44px;
 }
 .lang-btn:hover{background:rgba(255,255,255,.1);transform:scale(1.1)}
+
+.btn-add-news {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: .85rem;
+  cursor: pointer;
+  transition: all .3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(181,137,42,0.2);
+}
+
+.btn-add-news:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(181,137,42,0.3);
+}
+
 .admin-link{
   font-size:.8rem;color:rgba(255,255,255,.4);padding:4px 10px;
   border-radius:6px;transition:all .2s;
 }
 .admin-link:hover{color:rgba(255,255,255,.8);background:rgba(255,255,255,.1)}
 
-/* ── LAYOUT ── */
+/* CONTAINER */
 .container{max-width:1200px;margin:0 auto;padding:2.5rem 1.5rem}
 .page-header{margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
 .page-title{
@@ -90,85 +111,25 @@ img{max-width:100%;height:auto;display:block}
 }
 .page-sub{color:var(--ink3);margin-top:.4rem;font-size:.9rem}
 
-/* ── BUTTONS ── */
+/* BUTTONS */
 .btn{
   display:inline-flex;align-items:center;gap:6px;
-  padding:10px 22px;border-radius:var(--r);
+  padding:10px 22px;border-radius:10px;
   font-family:'Geologica',sans-serif;font-size:.875rem;
   font-weight:500;cursor:pointer;border:none;
   transition:all .2s;text-decoration:none;
 }
 .btn-primary{background:var(--blue);color:#fff}
 .btn-primary:hover{background:var(--blue2);color:#fff;transform:translateY(-1px)}
-.btn-gold{background:var(--gold);color:#fff}
-.btn-gold:hover{background:var(--gold2);color:#fff;transform:translateY(-1px)}
-.btn-outline{background:transparent;color:var(--ink2);border:1.5px solid var(--border)}
-.btn-outline:hover{border-color:var(--ink2);background:var(--cream2);color:var(--ink)}
-.btn-danger{background:transparent;color:var(--red);border:1px solid rgba(143,42,42,.3)}
-.btn-danger:hover{background:rgba(143,42,42,.08);border-color:var(--red)}
-.btn-sm{padding:6px 14px;font-size:.8rem}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--ink2)}
+.btn-outline:hover{background:var(--cream2);border-color:var(--ink3)}
 
-/* ── NEWS CARDS ── */
-.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
-.news-card{
-  background:#fff;border-radius:var(--r);
-  border:1px solid var(--border);
-  overflow:hidden;
-  transition:transform .25s,box-shadow .25s;
-  animation:fadeUp .5s both;
-}
-.news-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(26,22,18,.12)}
-.news-card-img{
-  width:100%;height:200px;object-fit:cover;
-  transition:transform .4s;
-}
-.news-card:hover .news-card-img{transform:scale(1.04)}
-.news-card-img-placeholder{
-  width:100%;height:180px;
-  background:linear-gradient(135deg,var(--cream2) 0%,var(--cream3) 100%);
-  display:flex;align-items:center;justify-content:center;
-  font-size:3rem;opacity:.4;
-}
-.news-card-body{padding:1.25rem}
-.news-card-pin{
-  display:inline-block;font-size:.7rem;font-weight:500;
-  letter-spacing:.06em;text-transform:uppercase;
-  background:var(--gold);color:#fff;
-  padding:2px 8px;border-radius:99px;margin-bottom:8px;
-}
-.news-card-title{
-  font-family:'Playfair Display',serif;
-  font-size:1.15rem;font-weight:600;color:var(--ink);
-  line-height:1.35;margin-bottom:.5rem;
-}
-.news-card-title a{color:inherit}
-.news-card-title a:hover{color:var(--gold)}
-.news-card-date{font-size:.78rem;color:var(--ink3);margin-bottom:.75rem}
-.news-card-text{font-size:.875rem;color:var(--ink2);line-height:1.6;
-  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.news-card-more{display:inline-block;margin-top:.75rem;font-size:.82rem;color:var(--blue);font-weight:500}
-.news-card-more:hover{color:var(--gold)}
-
-/* ── FORMS ── */
-.form-group{margin-bottom:1.25rem}
-.form-label{display:block;font-size:.85rem;font-weight:500;color:var(--ink2);margin-bottom:6px}
-.form-input,.form-textarea,.form-select{
-  width:100%;padding:10px 14px;
-  background:#fff;border:1.5px solid var(--border);
-  border-radius:var(--r);color:var(--ink);
-  font-family:'Geologica',sans-serif;font-size:.875rem;
-  outline:none;transition:border-color .2s;
-}
-.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--blue)}
-.form-textarea{min-height:160px;resize:vertical;line-height:1.7}
-.form-hint{font-size:.78rem;color:var(--ink3);margin-top:4px}
-.form-check{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.875rem}
-.form-check input{width:18px;height:18px;accent-color:var(--gold);cursor:pointer}
-
-/* ── FOOTER ── */
-footer{
-  background:var(--ink);color:rgba(255,255,255,.55);
-  padding:2rem 1.5rem;margin-top:4rem;
+/* FOOTER */
+.footer{
+  background:var(--ink2);
+  color:#fff;
+  padding:2rem 1.5rem;
+  margin-top:4rem;
   border-top:2px solid var(--gold);
 }
 .footer-inner{
@@ -179,61 +140,29 @@ footer{
 .footer-logo{font-family:'Playfair Display',serif;color:#fff;font-size:1rem;font-weight:600}
 .footer-logo span{color:var(--gold2)}
 
-/* ── UTILS ── */
-.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:.75rem;font-weight:500}
-.badge-gold{background:rgba(181,137,42,.15);color:var(--gold)}
-.badge-blue{background:rgba(42,95,143,.12);color:var(--blue)}
-.alert{padding:12px 16px;border-radius:var(--r);font-size:.875rem;margin-bottom:1rem}
-.alert-error{background:rgba(143,42,42,.08);border:1px solid rgba(143,42,42,.25);color:var(--red)}
-.alert-success{background:rgba(42,95,42,.08);border:1px solid rgba(42,95,42,.25);color:#2a5f2a}
-.divider{height:1px;background:var(--border);margin:2rem 0}
+/* UTILS */
+.news-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));
+  gap:1.5rem;
+}
 .text-muted{color:var(--ink3)}
 .text-sm{font-size:.85rem}
 
-/* ── ANIMATIONS ── */
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(18px)}
-  to{opacity:1;transform:translateY(0)}
-}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.fade-in{animation:fadeIn .4s both}
-
-.news-card:nth-child(1){animation-delay:.05s}
-.news-card:nth-child(2){animation-delay:.1s}
-.news-card:nth-child(3){animation-delay:.15s}
-.news-card:nth-child(4){animation-delay:.2s}
-.news-card:nth-child(5){animation-delay:.25s}
-.news-card:nth-child(6){animation-delay:.3s}
-
-/* Scroll reveal */
-.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}
-.reveal.visible{opacity:1;transform:none}
-
-/* Mobile */
 @media(max-width:768px){
   .nav-inner{padding:0 1rem;gap:1rem}
   .nav-links{display:none}
   .page-title{font-size:1.6rem}
   .news-grid{grid-template-columns:1fr}
   .container{padding:1.5rem 1rem}
+  .btn-add-news{padding:8px 12px;font-size:.8rem}
 }
 
-/* ── MOBILE MENU ── */
 .mob-menu-btn{
   display:none;background:none;border:none;cursor:pointer;
   color:rgba(255,255,255,.8);font-size:1.3rem;padding:4px;
 }
 @media(max-width:768px){.mob-menu-btn{display:block}}
-.mob-menu{
-  display:none;background:var(--ink);border-top:1px solid rgba(255,255,255,.1);
-  padding:.75rem 1rem;
-}
-.mob-menu.open{display:block}
-.mob-menu a{
-  display:block;color:rgba(255,255,255,.8);padding:8px 4px;
-  font-size:.9rem;border-bottom:1px solid rgba(255,255,255,.06);
-}
-.mob-menu a:last-child{border:none}
 </style>
 {% block head %}{% endblock %}
 </head>
@@ -242,55 +171,20 @@ footer{
 <nav class="nav">
   <div class="nav-inner">
     <div class="nav-logo">
-      <span style="font-size:1.8rem;display:flex;align-items:center">📚</span>
-      <div>
-        <div style="font-size:.95rem;letter-spacing:0.05em">Кітапхана</div>
-        <div style="font-size:.65rem;opacity:.7;margin-top:-2px">Библиотека</div>
-      </div>
+      <span>📚</span> Кітапхана
     </div>
     <div class="nav-links">
-      <a href="/" class="{% if request.path=='/' %}active{% endif %}" data-ru="Главная" data-kz="Басты бет">Главная</a>
-      <a href="/news" class="{% if request.path.startswith('/news') %}active{% endif %}" data-ru="Новости" data-kz="Жаңалықтар">Новости</a>
-      <a href="/schedule" class="{% if request.path=='/schedule' %}active{% endif %}" data-ru="График работы" data-kz="Жұмыс кестесі">График работы</a>
-      <a href="/about" class="{% if request.path=='/about' %}active{% endif %}" data-ru="О библиотеке" data-kz="Кітапхана туралы">О библиотеке</a>
+      <a href="/" class="{% if request.path=='/' %}active{% endif %}">Главная</a>
+      <a href="/news" class="{% if request.path.startswith('/news') %}active{% endif %}">Новости</a>
+      <a href="/schedule" class="{% if request.path=='/schedule' %}active{% endif %}">График работы</a>
+      <a href="/about" class="{% if request.path=='/about' %}active{% endif %}">О библиотеке</a>
     </div>
     <div class="nav-right">
-      <button class="lang-btn" id="langBtn" onclick="toggleLang()" title="Өз тілін өзгерту / Изменить язык">
-        <span id="langFlag">🇷🇺</span>
-      </button>
-      {% if session.get('admin') %}
-      <a href="/logout" class="admin-link" data-ru="Выйти" data-kz="Шығу">Выйти</a>
-      {% endif %}
-      <button class="mob-menu-btn" onclick="toggleMob()">☰</button>
-    </div>
-  </div>
-  <div class="mob-menu" id="mobMenu">
-    <a href="/" data-ru="Главная" data-kz="Басты бет">Главная</a>
-    <a href="/news" data-ru="Новости" data-kz="Жаңалықтар">Новости</a>
-    <a href="/schedule" data-ru="График работы" data-kz="Жұмыс кестесі">График работы</a>
-    <a href="/about" data-ru="О библиотеке" data-kz="Кітапхана туралы">О библиотеке</a>
-  </div>
-</nav>
-
-{% block content %}{% endblock %}
-
-<footer>
-  <div class="footer-inner">
-    <div>
-      <div class="footer-logo">📚 <span>Кітапхана</span></div>
-      <div style="margin-top:4px" data-ru="с. Краснознаменное, ул. Мектеп, 2" data-kz="Краснознаменное ауылы, Мектеп к., 2">с. Краснознаменное, ул. Мектеп, 2</div>
-    </div>
-    <div style="text-align:right">
-      <div data-ru="Пн–Пт: 09:00–18:00" data-kz="Дс–Жм: 09:00–18:00">Пн–Пт: 09:00–18:00</div>
-      <div style="margin-top:4px;font-size:.78rem;opacity:.5">© 2026</div>
-    </div>
-  </div>
-  <div class="nav-right">
       {% if session.get('admin') %}
       <a href="/admin/add" class="btn-add-news">➕ Добавить новость</a>
       {% endif %}
-    
-    <button class="lang-btn" id="langBtn" onclick="toggleLang()" title="Өз тілін өзгерту">
+      
+      <button class="lang-btn" id="langBtn" onclick="toggleLang()" title="Өз тілін өзгерту">
         <span id="langFlag">🇷🇺</span>
       </button>
       
@@ -299,9 +193,23 @@ footer{
       {% endif %}
       
       <button class="mob-menu-btn" onclick="toggleMob()">☰</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">📚 <span>Кітапхана</span> — Библиотека</div>
+    <div>© 2026 с. Краснознаменное</div>
+  </div>
 </footer>
 
 <script>
+// Язык
 let lang = localStorage.getItem('lib_lang') || 'ru';
 
 function toggleLang() {
@@ -316,32 +224,15 @@ function applyLang() {
   if (flagEl) {
     flagEl.textContent = lang === 'ru' ? '🇰🇿' : '🇷🇺';
   }
-  document.querySelectorAll('[data-ru]').forEach(el => {
-    el.textContent = lang === 'ru' ? el.dataset.ru : (el.dataset.kz || el.dataset.ru);
-  });
-  document.querySelectorAll('[data-ru-href]').forEach(el => {
-    el.href = lang === 'ru' ? el.dataset.ruHref : (el.dataset.kzHref || el.dataset.ruHref);
-  });
-  document.querySelectorAll('.lang-title').forEach(el => {
-    el.textContent = lang === 'ru' ? (el.dataset.ru||'') : (el.dataset.kz||el.dataset.ru||'');
-  });
-  document.querySelectorAll('.lang-body').forEach(el => {
-    el.innerHTML = lang === 'ru' ? (el.dataset.ru||'') : (el.dataset.kz||el.dataset.ru||'');
-  });
 }
 
+// Мобильное меню
 function toggleMob() {
-  document.getElementById('mobMenu').classList.toggle('open');
+  console.log('toggle');
 }
 
-// Scroll reveal
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-}, {threshold: 0.1});
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-document.addEventListener('DOMContentLoaded', applyLang);
+// Инициализация
+applyLang();
 </script>
-{% block scripts %}{% endblock %}
 </body>
 </html>
